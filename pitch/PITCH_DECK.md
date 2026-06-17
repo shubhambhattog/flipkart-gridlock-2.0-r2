@@ -2,7 +2,7 @@
 
 **Use this to build/refine the deck.** Each slide has: what appears **On slide**, a **Visual** suggestion,
 and **Say** (your spoken talking points). The clean text-only version for Gamma is in `GAMMA_DECK.md`.
-Target length: **11–12 slides, ~2.5–3 min.** Replace `[Team Name]` and `[demo link]` before presenting.
+Target length: **11–12 slides, ~2.5–3 min.** Replace `[Team Name]` before presenting (the live demo link is already filled in).
 
 ---
 
@@ -62,7 +62,7 @@ Target length: **11–12 slides, ~2.5–3 min.** Replace `[Team Name]` and `[dem
 - **Say:** "It's feasible — running now. Innovative — it outputs a decision, not a chart. Explainable — every number can be justified to a citizen or a court. Scalable — the engine is city-agnostic. And honest about its data. That's ParkPulse."
 
 ## SLIDE 12 — Close
-- **On slide:** **ParkPulse** — turning *"what already happened"* into *"where to stand tomorrow."* · [demo link] · [Team Name] · Thank you.
+- **On slide:** **ParkPulse** — turning *"what already happened"* into *"where to stand tomorrow."* · https://flipkart-gridlock-20-r2-rinxb9yibzp8knp6quhfew.streamlit.app · [Team Name] · Thank you.
 - **Visual:** Logo + live demo URL + Bengaluru map backdrop.
 - **Say:** "ParkPulse turns 298,000 rows of what already happened into where to stand tomorrow. Thank you — we'd love to put this in front of Bengaluru Traffic Police."
 

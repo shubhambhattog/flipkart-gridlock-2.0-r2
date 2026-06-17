@@ -5,7 +5,7 @@
 2. Copy **everything below the `=== PASTE BELOW ===` line** and paste it in.
 3. Choose **"Cards" / one card per `---`**, set tone to *Professional*, theme *dark*.
 4. Generate. Then drop in the app screenshots (Command Center map, Patrol plan, Repeat-offender chart).
-5. Replace `[Team Name]` and `[demo link]`.
+5. Replace `[Team Name]` with your team name (the live demo link is already filled in).
 
 === PASTE BELOW ===
 
@@ -90,5 +90,5 @@ Illegal parking chokes Bengaluru's busiest roads.
 
 # ParkPulse
 ### Turning "what already happened" into "where to stand tomorrow."
-Live demo: [demo link]
+Live demo: https://flipkart-gridlock-20-r2-rinxb9yibzp8knp6quhfew.streamlit.app
 [Team Name] · Thank you

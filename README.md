@@ -2,6 +2,8 @@
 
 **Gridlock Hackathon 2.0 · Round 2 Prototype · Theme 1 — Poor Visibility on Parking-Induced Congestion**
 
+> 🔴 **Live demo:** https://flipkart-gridlock-20-r2-rinxb9yibzp8knp6quhfew.streamlit.app
+
 ParkPulse turns **298,445 real BTP parking-violation records** (Nov 2023 – Apr 2024) into a
 decision-support tool that tells Bengaluru Traffic Police **where** illegal parking chokes traffic,
 **how much** each hotspot matters, **when** violations will recur, and **how** to deploy limited

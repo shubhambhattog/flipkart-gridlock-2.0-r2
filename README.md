@@ -1,0 +1,78 @@
+# 🚦 ParkPulse — Parking Enforcement Intelligence for Bengaluru
+
+**Gridlock Hackathon 2.0 · Round 2 Prototype · Theme 1 — Poor Visibility on Parking-Induced Congestion**
+
+ParkPulse turns **298,445 real BTP parking-violation records** (Nov 2023 – Apr 2024) into a
+decision-support tool that tells Bengaluru Traffic Police **where** illegal parking chokes traffic,
+**how much** each hotspot matters, **when** violations will recur, and **how** to deploy limited
+patrol teams for maximum impact.
+
+It is not a static dashboard — it is a closed loop: **detect → score → forecast → deploy → target.**
+
+> 📖 **Full solution write-up — the idea, logic and algorithms behind every module (for the team *and* the judges):** see **[SOLUTION.md](SOLUTION.md)**.
+
+---
+
+## What it does (4 modules)
+
+| Page | Capability |
+|---|---|
+| **Command Center** | City-wide 3-D hotspot map, KPIs, and the enforcement-coverage *blind-spot* insight |
+| **Hotspot Explorer** | Slice 298K records live by time / weekday / violation type / police station; hotspots re-rank instantly |
+| **Forecast & Patrol Planner** | Predicts enforcement load per *zone × weekday × hour* and auto-generates a spatially-spread deployment plan for *N* teams |
+| **Repeat-Offender Intelligence** | Surfaces the chronic 15% of vehicles responsible for ~34% of violations |
+
+**Congestion Impact Score (0–100):** `violations × avg_severity × flow_multiplier`, where the flow
+multiplier rewards junction-proximity and main-road blocking. Transparent and monotone by design.
+
+**Forecast:** Bayesian-shrunk historical rates per zone×weekday×hour; sparse weekday cells borrow
+strength from the zone's overall hour profile. Validated by an honest time-split backtest
+(train on the first 80% of the calendar, predict the held-out tail) → **Pearson r ≈ 0.69**.
+
+**Honesty note:** the timestamps record *when enforcement happened* (patrols are morning-heavy), not
+ground-truth parking demand. We treat this explicitly — optimising **enforcement efficiency** on the
+observed signal and flagging evening **coverage blind spots** rather than over-claiming.
+
+---
+
+## Run it locally
+
+```bash
+# 1. install
+pip install -r requirements.txt
+
+# 2. build the cleaned data layer from the raw CSV
+#    (expects: "dataset theme 1/jan to may police violation_anonymized*.csv")
+python app/prep.py
+
+# 3. launch
+streamlit run app/app.py
+```
+
+Then open **http://localhost:8501**.
+
+> If `data/clean.pkl` is already present (shipped in the source bundle), skip step 2.
+
+## Project layout
+
+```
+round2/
+├─ app/
+│  ├─ app.py                     # Command Center (entry)
+│  ├─ core.py                    # intelligence layer (zones, impact, forecaster, patrol optimiser) — pure pandas, unit-testable
+│  ├─ ui.py                      # cached loaders, colour ramps, pydeck/plotly builders
+│  ├─ prep.py                    # raw CSV → data/clean.pkl + junctions.pkl
+│  └─ pages/
+│     ├─ 1_Hotspot_Explorer.py
+│     ├─ 2_Forecast_and_Patrol.py
+│     └─ 3_Repeat_Offenders.py
+├─ data/                         # generated: clean.pkl, junctions.pkl
+├─ .streamlit/config.toml        # dark theme
+└─ requirements.txt
+```
+
+`python app/core.py` runs a standalone smoke test of the intelligence layer (zones, backtest, sample patrol plan).
+
+---
+
+*Built for Bengaluru Traffic Police (ASTraM) · data provided by HackerEarth · uses only the provided Theme-1 dataset.*

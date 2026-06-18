@@ -23,6 +23,14 @@ web/out/
 web/.vercel/
 *.tsbuildinfo
 
+# Full-stack version (fullstack/)
+fullstack/frontend/node_modules/
+fullstack/frontend/.next/
+fullstack/frontend/out/
+fullstack/frontend/.vercel/
+fullstack/frontend/.env*
+fullstack/backend/__pycache__/
+
 # OS
 .DS_Store
 Thumbs.db

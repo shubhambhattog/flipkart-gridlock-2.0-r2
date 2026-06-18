@@ -23,7 +23,7 @@ export default function Home() {
 
   if (err)
     return (
-      <div className="p-8 text-red-300">
+      <div className="p-8 text-destructive">
         Can&apos;t reach the API. Start the backend: <code>python fullstack/backend/main.py</code> (:8000).
       </div>
     );
@@ -32,7 +32,7 @@ export default function Home() {
     <div>
       <section className="relative h-[62vh] min-h-[420px] w-full overflow-hidden">
         {grid && <HotspotMap grid={grid} />}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#0b0f17]/80 via-transparent to-[#0b0f17]" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-background/85 via-transparent to-background" />
         <div className="pointer-events-none absolute bottom-28 left-8 max-w-2xl">
           <h1 className="text-4xl font-bold leading-[1.15]">
             Turning <span className="text-[var(--primary)]">298,000</span> parking tickets into{" "}
@@ -76,10 +76,10 @@ export default function Home() {
                   data={meta.coverage.map((c) => ({ key: c.hour, value: c.share }))}
                   colorFor={(d) =>
                     Number(d.key) >= 17 && Number(d.key) <= 21
-                      ? "#E2352B"
+                      ? "var(--destructive)"
                       : Number(d.key) < 13
                         ? "var(--primary)"
-                        : "#3a4254"
+                        : "var(--muted)"
                   }
                   labels={["12 AM", "12 PM", "11 PM"]}
                 />
@@ -94,8 +94,8 @@ export default function Home() {
                     <span className="w-5 text-sm text-[var(--muted-foreground)]">{i + 1}</span>
                     <span className="flex-1 truncate text-sm">{h.label}</span>
                     <span className="text-xs text-[var(--muted-foreground)]">{fmt(h.violations)}</span>
-                    <div className="h-2 w-20 overflow-hidden rounded bg-[#222b3d]">
-                      <div className="h-full" style={{ width: `${h.impact_score}%`, background: "var(--primary)" }} />
+                    <div className="h-2 w-20 overflow-hidden rounded-full bg-muted">
+                      <div className="h-full bg-primary" style={{ width: `${h.impact_score}%` }} />
                     </div>
                   </li>
                 ))}

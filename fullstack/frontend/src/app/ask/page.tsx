@@ -1,14 +1,16 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
+import { Bot, Send } from "lucide-react";
 import { api, type Deployment } from "@/lib/api";
 import { Spinner } from "@/components/ui";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 const ZoneMap = dynamic(() => import("@/components/ZoneMap"), {
   ssr: false,
-  loading: () => (
-    <div className="absolute inset-0 grid place-items-center text-[var(--muted-foreground)]">Loading map…</div>
-  ),
+  loading: () => <div className="absolute inset-0 grid place-items-center text-muted-foreground">Loading map…</div>,
 });
 
 type Msg = { role: "user" | "assistant"; text: string; plan?: Deployment[] | null };
@@ -29,6 +31,14 @@ const GREETING: Msg = {
 
 const fmt = (n: number) => n.toLocaleString("en-IN");
 
+function BotAvatar() {
+  return (
+    <div className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-secondary text-muted-foreground">
+      <Bot className="h-4 w-4" />
+    </div>
+  );
+}
+
 export default function AskPage() {
   const [messages, setMessages] = useState<Msg[]>([GREETING]);
   const [input, setInput] = useState("");
@@ -36,7 +46,6 @@ export default function AskPage() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Keep the conversation pinned to the latest message.
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, thinking]);
@@ -51,14 +60,11 @@ export default function AskPage() {
       const resp = await api.copilot(message);
       setMessages((m) => [...m, { role: "assistant", text: resp.answer, plan: resp.plan }]);
     } catch {
-      setMessages((m) => [
-        ...m,
-        {
-          role: "assistant",
-          text: "Sorry — I couldn't reach the planning engine. Make sure the backend is running and try again.",
-          plan: null,
-        },
-      ]);
+      setMessages((m) => [...m, {
+        role: "assistant",
+        text: "Sorry — I couldn't reach the planning engine. Make sure the backend is running and try again.",
+        plan: null,
+      }]);
     } finally {
       setThinking(false);
     }
@@ -71,82 +77,77 @@ export default function AskPage() {
 
   return (
     <div className="flex h-full flex-col">
-      {/* Header */}
-      <header className="shrink-0 border-b border-[var(--border)] px-6 py-5">
-        <h1 className="text-2xl font-bold">Ask ParkPulse 🤖</h1>
-        <p className="mt-1 text-sm text-[var(--muted-foreground)]">
-          Your AI co-pilot for enforcement planning — ask in plain English, Hindi or Kannada.
-        </p>
+      <header className="flex shrink-0 items-center gap-3 border-b border-border px-6 py-5">
+        <div className="grid h-9 w-9 place-items-center rounded-lg bg-primary/15 text-primary">
+          <Bot className="h-5 w-5" />
+        </div>
+        <div>
+          <h1 className="text-2xl font-bold leading-tight">Ask ParkPulse</h1>
+          <p className="text-sm text-muted-foreground">
+            Your AI co-pilot — ask in plain English, Hindi or Kannada.
+          </p>
+        </div>
       </header>
 
-      {/* Scrollable conversation */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-6 py-6">
         <div className="mx-auto flex max-w-3xl flex-col gap-5">
           {messages.map((m, i) =>
             m.role === "user" ? (
               <div key={i} className="flex justify-end">
-                <div className="max-w-[80%] rounded-2xl rounded-br-md bg-[var(--primary)] px-4 py-2.5 text-sm text-white">
+                <div className="max-w-[80%] rounded-2xl rounded-br-md bg-primary px-4 py-2.5 text-sm text-primary-foreground">
                   {m.text}
                 </div>
               </div>
             ) : (
               <div key={i} className="flex flex-col gap-3">
                 <div className="flex items-start gap-3">
-                  <div className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-white/5 text-sm">
-                    🤖
+                  <BotAvatar />
+                  <div className="max-w-[80%] rounded-xl border border-border bg-card px-4 py-3 text-sm leading-relaxed">
+                    {m.text}
                   </div>
-                  <div className="card max-w-[80%] px-4 py-3 text-sm leading-relaxed">{m.text}</div>
                 </div>
 
                 {m.plan && m.plan.length > 0 && (
                   <div className="ml-11 flex flex-col gap-4">
-                    {/* Deployment table */}
-                    <div className="card overflow-hidden p-0">
-                      <table className="w-full text-sm">
-                        <thead>
-                          <tr className="border-b border-[var(--border)] text-left text-xs text-[var(--muted-foreground)]">
-                            <th className="px-4 py-2.5 font-medium">Team</th>
-                            <th className="px-4 py-2.5 font-medium">Zone</th>
-                            <th className="px-4 py-2.5 text-right font-medium">Exp. catches</th>
-                            <th className="px-4 py-2.5 text-right font-medium">Impact</th>
-                          </tr>
-                        </thead>
-                        <tbody>
+                    <div className="overflow-hidden rounded-xl border border-border">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Team</TableHead>
+                            <TableHead>Zone</TableHead>
+                            <TableHead className="text-right">Exp. catches</TableHead>
+                            <TableHead className="w-[130px] text-right">Impact</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
                           {m.plan.map((d) => (
-                            <tr key={d.team} className="border-b border-[var(--border)] last:border-0">
-                              <td className="px-4 py-2.5 font-medium">{d.team}</td>
-                              <td className="px-4 py-2.5">
+                            <TableRow key={d.team}>
+                              <TableCell className="font-medium">{d.team}</TableCell>
+                              <TableCell>
                                 <div className="truncate">{d.label}</div>
-                                <div className="text-[11px] text-[var(--muted-foreground)]">{d.top_violation}</div>
-                              </td>
-                              <td className="px-4 py-2.5 text-right tabular-nums">{fmt(d.pred_load)}</td>
-                              <td className="px-4 py-2.5 text-right">
+                                <div className="text-[11px] text-muted-foreground">{d.top_violation}</div>
+                              </TableCell>
+                              <TableCell className="text-right tabular-nums">{fmt(d.pred_load)}</TableCell>
+                              <TableCell>
                                 <div className="ml-auto flex w-24 items-center gap-2">
-                                  <div className="h-1.5 flex-1 overflow-hidden rounded bg-[#222b3d]">
-                                    <div
-                                      className="h-full"
-                                      style={{
-                                        width: `${Math.min(100, d.impact_score)}%`,
-                                        background: "var(--primary)",
-                                      }}
-                                    />
+                                  <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
+                                    <div className="h-full bg-primary" style={{ width: `${Math.min(100, d.impact_score)}%` }} />
                                   </div>
-                                  <span className="w-7 text-right tabular-nums text-xs text-[var(--muted-foreground)]">
+                                  <span className="w-7 text-right text-xs tabular-nums text-muted-foreground">
                                     {Math.round(d.impact_score)}
                                   </span>
                                 </div>
-                              </td>
-                            </tr>
+                              </TableCell>
+                            </TableRow>
                           ))}
-                        </tbody>
-                      </table>
+                        </TableBody>
+                      </Table>
                     </div>
 
-                    {/* Map of the suggested deployment */}
-                    <div className="relative h-[360px] w-full overflow-hidden rounded-2xl border border-[var(--border)]">
+                    <div className="relative h-[360px] w-full overflow-hidden rounded-xl border border-border">
                       <ZoneMap zones={[]} plan={m.plan} zoom={11.2} />
                     </div>
-                    <p className="text-xs text-[var(--muted-foreground)]">
+                    <p className="text-xs text-muted-foreground">
                       {m.plan.length} {m.plan.length === 1 ? "team" : "teams"} placed at the highest-impact zones
                       for this window — pins show where to stand.
                     </p>
@@ -158,8 +159,8 @@ export default function AskPage() {
 
           {thinking && (
             <div className="flex items-center gap-3">
-              <div className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-white/5 text-sm">🤖</div>
-              <div className="card px-4 py-3">
+              <BotAvatar />
+              <div className="rounded-xl border border-border bg-card px-2 py-1">
                 <Spinner label="thinking…" />
               </div>
             </div>
@@ -167,8 +168,7 @@ export default function AskPage() {
         </div>
       </div>
 
-      {/* Composer pinned to the bottom */}
-      <div className="shrink-0 border-t border-[var(--border)] px-6 py-4">
+      <div className="shrink-0 border-t border-border px-6 py-4">
         <div className="mx-auto max-w-3xl">
           <div className="mb-3 flex flex-wrap gap-2">
             {EXAMPLES.map((ex) => (
@@ -176,33 +176,18 @@ export default function AskPage() {
                 key={ex}
                 type="button"
                 onClick={() => fillExample(ex)}
-                className="rounded-full border border-[var(--border)] bg-white/5 px-3 py-1.5 text-xs text-[var(--muted-foreground)] transition-colors hover:border-[var(--primary)] hover:text-[var(--text)]"
+                className="rounded-full border border-border bg-secondary px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
               >
                 {ex}
               </button>
             ))}
           </div>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              send(input);
-            }}
-            className="flex items-center gap-2"
-          >
-            <input
-              ref={inputRef}
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask in plain English, Hindi or Kannada…"
-              className="flex-1 rounded-xl border border-[var(--border)] bg-[var(--panel)] px-4 py-2.5 text-sm outline-none transition-colors placeholder:text-[var(--muted-foreground)] focus:border-[var(--primary)]"
-            />
-            <button
-              type="submit"
-              disabled={thinking || !input.trim()}
-              className="rounded-xl bg-[var(--primary)] px-5 py-2.5 text-sm font-medium text-white transition-opacity disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              Send
-            </button>
+          <form onSubmit={(e) => { e.preventDefault(); send(input); }} className="flex items-center gap-2">
+            <Input ref={inputRef} value={input} onChange={(e) => setInput(e.target.value)}
+              placeholder="Ask in plain English, Hindi or Kannada…" className="flex-1" />
+            <Button type="submit" disabled={thinking || !input.trim()} size="icon" aria-label="Send">
+              <Send />
+            </Button>
           </form>
         </div>
       </div>

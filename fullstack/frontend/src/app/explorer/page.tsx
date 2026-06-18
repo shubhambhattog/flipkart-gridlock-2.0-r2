@@ -3,12 +3,12 @@ import { useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import { api, DOW, type Zone, type ExplorerResp } from "@/lib/api";
 import { Card, Kpi, Spinner } from "@/components/ui";
+import { Slider } from "@/components/ui/slider";
+import { cn } from "@/lib/utils";
 
 const ZoneMap = dynamic(() => import("@/components/ZoneMap"), {
   ssr: false,
-  loading: () => (
-    <div className="absolute inset-0 grid place-items-center text-[var(--muted-foreground)]">Loading map…</div>
-  ),
+  loading: () => <div className="absolute inset-0 grid place-items-center text-muted-foreground">Loading map…</div>,
 });
 
 type Facets = { types: string[]; stations: string[]; dows: string[] };
@@ -20,23 +20,11 @@ const hourLabel = (h: number) => {
   return `${hr} ${ap}`;
 };
 
-/** Local chip-toggle multiselect used for weekdays / types / stations. */
-function MultiSelect({
-  options,
-  selected,
-  onToggle,
-  onAll,
-  onNone,
-  allLabel = "All",
-  noneLabel = "Clear",
+function ChipGroup({
+  options, selected, onToggle, onAll, onNone, allLabel = "All", noneLabel = "Clear",
 }: {
-  options: string[];
-  selected: string[];
-  onToggle: (v: string) => void;
-  onAll: () => void;
-  onNone: () => void;
-  allLabel?: string;
-  noneLabel?: string;
+  options: string[]; selected: string[]; onToggle: (v: string) => void;
+  onAll: () => void; onNone: () => void; allLabel?: string; noneLabel?: string;
 }) {
   return (
     <div>
@@ -45,29 +33,23 @@ function MultiSelect({
           const on = selected.includes(o);
           return (
             <button
-              key={o}
-              type="button"
-              onClick={() => onToggle(o)}
-              aria-pressed={on}
-              className={`rounded-full px-3 py-1 text-xs transition-colors ${
+              key={o} type="button" onClick={() => onToggle(o)} aria-pressed={on}
+              className={cn(
+                "rounded-full px-3 py-1 text-xs transition-colors",
                 on
-                  ? "bg-[var(--primary)] text-white"
-                  : "bg-white/5 text-[var(--muted-foreground)] hover:bg-white/10"
-              }`}
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-secondary text-muted-foreground hover:bg-accent hover:text-accent-foreground",
+              )}
             >
               {o}
             </button>
           );
         })}
       </div>
-      <div className="mt-2 flex gap-3 text-[11px] text-[var(--muted-foreground)]">
-        <button type="button" onClick={onAll} className="hover:text-[var(--text)]">
-          {allLabel}
-        </button>
+      <div className="mt-2 flex gap-3 text-[11px] text-muted-foreground">
+        <button type="button" onClick={onAll} className="hover:text-foreground">{allLabel}</button>
         <span className="opacity-40">·</span>
-        <button type="button" onClick={onNone} className="hover:text-[var(--text)]">
-          {noneLabel}
-        </button>
+        <button type="button" onClick={onNone} className="hover:text-foreground">{noneLabel}</button>
       </div>
     </div>
   );
@@ -78,73 +60,44 @@ export default function ExplorerPage() {
   const [facetsErr, setFacetsErr] = useState(false);
 
   const [dows, setDows] = useState<string[]>([...DOW]);
-  const [h0, setH0] = useState(6);
-  const [h1, setH1] = useState(13);
+  const [hours, setHours] = useState<[number, number]>([6, 13]);
   const [types, setTypes] = useState<string[]>([]);
   const [stations, setStations] = useState<string[]>([]);
-  // typesReady guards the initial default-all selection until facets arrive.
   const [typesReady, setTypesReady] = useState(false);
 
   const [res, setRes] = useState<ExplorerResp | null>(null);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState(false);
 
-  // Load filter options; default every violation type to selected.
   useEffect(() => {
-    api
-      .facets()
-      .then((f) => {
-        setFacets(f);
-        setTypes(f.types);
-        setTypesReady(true);
-      })
-      .catch(() => setFacetsErr(true));
+    api.facets().then((f) => { setFacets(f); setTypes(f.types); setTypesReady(true); }).catch(() => setFacetsErr(true));
   }, []);
 
-  // Re-query whenever any control changes (after facets/types are seeded).
+  const [h0, h1] = hours;
   useEffect(() => {
     if (!typesReady) return;
     let alive = true;
     setLoading(true);
     setErr(false);
-    const lo = Math.min(h0, h1);
-    const hi = Math.max(h0, h1);
-    api
-      .explorer({ dows, h0: lo, h1: hi, types, stations })
-      .then((r) => {
-        if (alive) setRes(r);
-      })
-      .catch(() => {
-        if (alive) setErr(true);
-      })
-      .finally(() => {
-        if (alive) setLoading(false);
-      });
-    return () => {
-      alive = false;
-    };
+    api.explorer({ dows, h0: Math.min(h0, h1), h1: Math.max(h0, h1), types, stations })
+      .then((r) => { if (alive) setRes(r); })
+      .catch(() => { if (alive) setErr(true); })
+      .finally(() => { if (alive) setLoading(false); });
+    return () => { alive = false; };
   }, [dows, h0, h1, types, stations, typesReady]);
 
-  const toggle = (arr: string[], v: string) =>
-    arr.includes(v) ? arr.filter((x) => x !== v) : [...arr, v];
+  const toggle = (arr: string[], v: string) => (arr.includes(v) ? arr.filter((x) => x !== v) : [...arr, v]);
 
   const zones: Zone[] = res?.zones ?? [];
   const count = res?.count ?? 0;
   const topZones = useMemo(
-    () => [...zones].sort((a, b) => b.impact_score - a.impact_score).slice(0, 15),
-    [zones],
-  );
-  const maxImpact = useMemo(
-    () => Math.max(...topZones.map((z) => z.impact_score), 1e-9),
-    [topZones],
-  );
-
-  const stationLabel =
-    stations.length === 0 ? "all stations" : `${stations.length} station${stations.length > 1 ? "s" : ""}`;
+    () => [...zones].sort((a, b) => b.impact_score - a.impact_score).slice(0, 15), [zones]);
+  const maxImpact = useMemo(() => Math.max(...topZones.map((z) => z.impact_score), 1e-9), [topZones]);
+  const stationLabel = stations.length === 0 ? "all stations" : `${stations.length} station${stations.length > 1 ? "s" : ""}`;
 
   if (facetsErr)
     return (
-      <div className="p-8 text-red-300">
+      <div className="p-8 text-destructive">
         Can&apos;t reach the API. Start the backend: <code>python fullstack/backend/main.py</code> (:8000).
       </div>
     );
@@ -153,9 +106,8 @@ export default function ExplorerPage() {
     <div className="mx-auto max-w-6xl px-6 py-10">
       <header className="mb-6">
         <h1 className="text-2xl font-bold">Hotspot Explorer</h1>
-        <p className="mt-1 text-sm text-[var(--muted-foreground)]">
-          Slice 298,000 violations by day, hour, type and police station — hotspots re-rank live as you
-          filter.
+        <p className="mt-1 text-sm text-muted-foreground">
+          Slice 298,000 violations by day, hour, type and police station — hotspots re-rank live as you filter.
         </p>
       </header>
 
@@ -163,169 +115,89 @@ export default function ExplorerPage() {
         <Spinner label="Loading filters…" />
       ) : (
         <>
-          {/* Controls */}
           <Card className="mb-6">
             <div className="grid gap-6 md:grid-cols-2">
               <div>
-                <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">
-                  Weekdays
-                </div>
-                <MultiSelect
-                  options={DOW}
-                  selected={dows}
-                  onToggle={(v) => setDows((p) => toggle(p, v))}
-                  onAll={() => setDows([...DOW])}
-                  onNone={() => setDows([])}
-                />
+                <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Weekdays</div>
+                <ChipGroup options={DOW} selected={dows} onToggle={(v) => setDows((p) => toggle(p, v))}
+                  onAll={() => setDows([...DOW])} onNone={() => setDows([])} />
               </div>
-
               <div>
-                <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">
-                  Hour range
-                </div>
-                <div className="flex items-center gap-3">
-                  <label className="flex items-center gap-2 text-sm text-[var(--muted-foreground)]">
-                    From
-                    <input
-                      type="number"
-                      min={0}
-                      max={23}
-                      value={h0}
-                      onChange={(e) =>
-                        setH0(Math.max(0, Math.min(23, Number(e.target.value) || 0)))
-                      }
-                      className="w-16 rounded-lg border border-[var(--border)] bg-[var(--panel)] px-2 py-1.5 text-sm text-[var(--text)] outline-none focus:border-[var(--primary)]"
-                    />
-                  </label>
-                  <label className="flex items-center gap-2 text-sm text-[var(--muted-foreground)]">
-                    To
-                    <input
-                      type="number"
-                      min={0}
-                      max={23}
-                      value={h1}
-                      onChange={(e) =>
-                        setH1(Math.max(0, Math.min(23, Number(e.target.value) || 0)))
-                      }
-                      className="w-16 rounded-lg border border-[var(--border)] bg-[var(--panel)] px-2 py-1.5 text-sm text-[var(--text)] outline-none focus:border-[var(--primary)]"
-                    />
-                  </label>
-                  <span className="text-xs text-[var(--muted-foreground)]">
+                <div className="mb-2 flex items-center justify-between text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  <span>Hour range</span>
+                  <span className="font-medium normal-case tabular-nums text-foreground">
                     {hourLabel(Math.min(h0, h1))} – {hourLabel(Math.max(h0, h1))}
                   </span>
                 </div>
+                <Slider min={0} max={23} step={1} value={[h0, h1]}
+                  onValueChange={(v) => Array.isArray(v) && setHours([v[0], v[1]])} className="py-3" />
               </div>
-
               <div>
-                <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">
-                  Violation types
-                </div>
-                <MultiSelect
-                  options={facets.types}
-                  selected={types}
-                  onToggle={(v) => setTypes((p) => toggle(p, v))}
-                  onAll={() => setTypes(facets.types)}
-                  onNone={() => setTypes([])}
-                />
+                <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Violation types</div>
+                <ChipGroup options={facets.types} selected={types} onToggle={(v) => setTypes((p) => toggle(p, v))}
+                  onAll={() => setTypes(facets.types)} onNone={() => setTypes([])} />
               </div>
-
               <div>
-                <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">
-                  Police stations{" "}
-                  <span className="font-normal normal-case text-[10px]">(none = all)</span>
+                <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Police stations <span className="font-normal normal-case text-[10px]">(none = all)</span>
                 </div>
-                <MultiSelect
-                  options={facets.stations}
-                  selected={stations}
-                  onToggle={(v) => setStations((p) => toggle(p, v))}
-                  onAll={() => setStations(facets.stations)}
-                  onNone={() => setStations([])}
-                  allLabel="Select all"
-                  noneLabel="All (clear)"
-                />
+                <ChipGroup options={facets.stations} selected={stations} onToggle={(v) => setStations((p) => toggle(p, v))}
+                  onAll={() => setStations(facets.stations)} onNone={() => setStations([])}
+                  allLabel="Select all" noneLabel="All (clear)" />
               </div>
             </div>
           </Card>
 
-          {/* KPIs */}
           <div className="mb-6 grid grid-cols-2 gap-3 md:grid-cols-4">
-            <Kpi label="Matching violations" value={fmt(count)} hint={`${stationLabel}`} />
-            <Kpi
-              label="Active zones"
-              value={fmt(zones.length)}
-              hint={dows.length ? `${dows.length} of 7 weekdays` : "no weekdays"}
-            />
-            <Kpi
-              label="Window"
-              value={`${hourLabel(Math.min(h0, h1))}–${hourLabel(Math.max(h0, h1))}`}
-              hint={`${Math.abs(Math.max(h0, h1) - Math.min(h0, h1)) + 1} hour band`}
-            />
-            <Kpi
-              label="Types selected"
-              value={`${types.length}/${facets.types.length}`}
-              hint="violation categories"
-            />
+            <Kpi label="Matching violations" value={fmt(count)} hint={stationLabel} />
+            <Kpi label="Active zones" value={fmt(zones.length)} hint={dows.length ? `${dows.length} of 7 weekdays` : "no weekdays"} />
+            <Kpi label="Window" value={`${hourLabel(Math.min(h0, h1))}–${hourLabel(Math.max(h0, h1))}`}
+              hint={`${Math.abs(Math.max(h0, h1) - Math.min(h0, h1)) + 1} hour band`} />
+            <Kpi label="Types selected" value={`${types.length}/${facets.types.length}`} hint="violation categories" />
           </div>
 
           {err ? (
-            <Card className="text-red-300">
-              Couldn&apos;t load matching hotspots. Adjust the filters or try again.
-            </Card>
+            <Card className="text-destructive">Couldn&apos;t load matching hotspots. Adjust the filters or try again.</Card>
           ) : (
             <div className="grid gap-6 lg:grid-cols-5">
-              {/* Map */}
               <div className="lg:col-span-3">
-                <div className="relative h-[460px] overflow-hidden rounded-2xl border border-[var(--border)]">
+                <div className="relative h-[460px] overflow-hidden rounded-xl border border-border">
                   {loading && !res ? (
-                    <div className="absolute inset-0 grid place-items-center text-[var(--muted-foreground)]">
-                      Loading…
-                    </div>
+                    <div className="absolute inset-0 grid place-items-center text-muted-foreground">Loading…</div>
                   ) : zones.length === 0 ? (
-                    <div className="absolute inset-0 grid place-items-center px-6 text-center text-sm text-[var(--muted-foreground)]">
+                    <div className="absolute inset-0 grid place-items-center px-6 text-center text-sm text-muted-foreground">
                       No violations match these filters. Widen the hour range or add weekdays / types.
                     </div>
                   ) : (
                     <ZoneMap zones={zones} />
                   )}
                   {loading && res && (
-                    <div className="absolute right-3 top-3 rounded-full bg-black/60 px-3 py-1 text-[11px] text-[var(--muted-foreground)]">
+                    <div className="absolute right-3 top-3 rounded-full border border-border bg-card/80 px-3 py-1 text-[11px] text-muted-foreground backdrop-blur">
                       Updating…
                     </div>
                   )}
                 </div>
               </div>
-
-              {/* Ranked table */}
               <div className="lg:col-span-2">
                 <Card className="h-[460px] overflow-hidden">
                   <div className="flex items-baseline justify-between">
                     <h3 className="text-lg font-bold">Top zones</h3>
-                    <span className="text-xs text-[var(--muted-foreground)]">by impact score</span>
+                    <span className="text-xs text-muted-foreground">by impact score</span>
                   </div>
                   {zones.length === 0 ? (
-                    <p className="mt-6 text-sm text-[var(--muted-foreground)]">
-                      No matching zones yet — relax a filter to surface hotspots.
-                    </p>
+                    <p className="mt-6 text-sm text-muted-foreground">No matching zones yet — relax a filter to surface hotspots.</p>
                   ) : (
                     <ul className="mt-4 space-y-2.5 overflow-y-auto pr-1" style={{ maxHeight: 372 }}>
                       {topZones.map((z, i) => (
                         <li key={z.gh6} className="flex items-center gap-3">
-                          <span className="w-5 text-right text-sm text-[var(--muted-foreground)]">{i + 1}</span>
+                          <span className="w-5 text-right text-sm text-muted-foreground">{i + 1}</span>
                           <div className="min-w-0 flex-1">
                             <div className="truncate text-sm">{z.label}</div>
-                            <div className="truncate text-[11px] text-[var(--muted-foreground)]">
-                              {z.top_violation}
-                            </div>
+                            <div className="truncate text-[11px] text-muted-foreground">{z.top_violation}</div>
                           </div>
-                          <span className="text-xs text-[var(--muted-foreground)]">{fmt(z.violations)}</span>
-                          <div className="h-2 w-16 overflow-hidden rounded bg-[#222b3d]">
-                            <div
-                              className="h-full"
-                              style={{
-                                width: `${(z.impact_score / maxImpact) * 100}%`,
-                                background: "var(--primary)",
-                              }}
-                            />
+                          <span className="text-xs tabular-nums text-muted-foreground">{fmt(z.violations)}</span>
+                          <div className="h-1.5 w-16 overflow-hidden rounded-full bg-muted">
+                            <div className="h-full bg-primary" style={{ width: `${(z.impact_score / maxImpact) * 100}%` }} />
                           </div>
                         </li>
                       ))}
@@ -336,10 +208,9 @@ export default function ExplorerPage() {
             </div>
           )}
 
-          <p className="mt-6 text-center text-xs text-[var(--muted-foreground)]">
-            Showing {fmt(zones.length)} zones · {fmt(count)} violations across{" "}
-            {dows.length || "no"} weekday{dows.length === 1 ? "" : "s"} · hotspots re-rank live as you
-            filter.
+          <p className="mt-6 text-center text-xs text-muted-foreground">
+            Showing {fmt(zones.length)} zones · {fmt(count)} violations across {dows.length || "no"} weekday
+            {dows.length === 1 ? "" : "s"} · hotspots re-rank live as you filter.
           </p>
         </>
       )}

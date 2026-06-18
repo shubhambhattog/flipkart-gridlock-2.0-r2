@@ -67,6 +67,20 @@ To update the live app later, just `git push` to `main` — Cloud auto-redeploys
 
 ---
 
+## Optional — enable the "Ask ParkPulse" AI co-pilot
+The co-pilot page needs an **Anthropic API key**. The rest of the app runs fine without it (the page just
+shows a setup card).
+- **Local:** create `.streamlit/secrets.toml` with:
+  ```toml
+  ANTHROPIC_API_KEY = "sk-ant-..."
+  # COPILOT_MODEL = "claude-sonnet-4-6"   # optional override
+  ```
+- **Streamlit Cloud:** *Manage app → Settings → Secrets* → paste the same line → reload.
+
+> `.streamlit/secrets.toml` is git-ignored — **never commit your key.**
+
+---
+
 ## Troubleshooting
 | Symptom | Fix |
 |---|---|

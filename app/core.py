@@ -147,6 +147,32 @@ def allocate_patrols(zones: pd.DataFrame, pred: pd.DataFrame, k: int = 10,
     return out
 
 # --------------------------------------------------------------------------
+def coverage_by_hour(df: pd.DataFrame) -> pd.DataFrame:
+    """Share of enforcement by hour-of-day — exposes the evening coverage gap."""
+    c = df.groupby("hour").size()
+    return pd.DataFrame({"hour": c.index.astype(int),
+                         "violations": c.values,
+                         "share": (c / c.sum()).values})
+
+def roi_curve(pred: pd.DataFrame, k_max: int = 20) -> pd.DataFrame:
+    """Impact captured by the top-K predicted zones vs spreading teams evenly.
+       optimal = cumulative share of predicted load at the top-K zones;
+       even    = K / (#active zones) = expected share without targeting."""
+    loads = np.sort(pred["pred_load"].values)[::-1]
+    total = loads.sum()
+    n = len(loads)
+    rows, cum, prev = [], 0.0, 0.0
+    for k in range(1, min(k_max, n) + 1):
+        cum += float(loads[k - 1])
+        opt = cum / total if total else 0.0
+        even = k / n if n else 0.0
+        rows.append({"teams": k, "optimal": opt, "even": even,
+                     "ratio": (opt / even) if even else 0.0,
+                     "marginal": opt - prev})
+        prev = opt
+    return pd.DataFrame(rows)
+
+# --------------------------------------------------------------------------
 if __name__ == "__main__":
     df = load_clean()
     print("clean:", df.shape)

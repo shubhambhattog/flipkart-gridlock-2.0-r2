@@ -68,12 +68,12 @@ To update the live app later, just `git push` to `main` — Cloud auto-redeploys
 ---
 
 ## Optional — enable the "Ask ParkPulse" AI co-pilot
-The co-pilot page needs an **Anthropic API key**. The rest of the app runs fine without it (the page just
-shows a setup card).
+The co-pilot page needs a free **Google Gemini API key** (get one at `aistudio.google.com/apikey`). The rest
+of the app runs fine without it (the page just shows a setup card).
 - **Local:** create `.streamlit/secrets.toml` with:
   ```toml
-  ANTHROPIC_API_KEY = "sk-ant-..."
-  # COPILOT_MODEL = "claude-sonnet-4-6"   # optional override
+  GEMINI_API_KEY = "AIza..."
+  # COPILOT_MODEL = "gemini-2.5-flash"   # optional override (e.g. gemini-2.5-pro)
   ```
 - **Streamlit Cloud:** *Manage app → Settings → Secrets* → paste the same line → reload.
 

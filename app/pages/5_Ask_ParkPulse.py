@@ -26,14 +26,15 @@ def _get_secret(name, default=""):
         pass
     return os.environ.get(name, default)
 
-key   = _get_secret("ANTHROPIC_API_KEY")
-model = _get_secret("COPILOT_MODEL", "claude-sonnet-4-6")
+key   = _get_secret("GEMINI_API_KEY")
+model = _get_secret("COPILOT_MODEL", "gemini-2.5-flash")
 
 # ---- not configured: show a friendly setup card and stop (keeps the app crash-free) ----
 if not key:
-    st.info("**Enable the co-pilot in 1 minute** — add an Anthropic API key.")
+    st.info("**Enable the co-pilot in 1 minute** — add a free Google Gemini API key "
+            "(get one at aistudio.google.com/apikey).")
     st.markdown("**Local:** create `.streamlit/secrets.toml`:")
-    st.code('ANTHROPIC_API_KEY = "sk-ant-..."', language="toml")
+    st.code('GEMINI_API_KEY = "AIza..."', language="toml")
     st.markdown("**Streamlit Cloud:** *Manage app → Settings → Secrets* → paste the same line. "
                 "Then reload this page.")
     st.markdown("Once enabled, try asking:")
@@ -42,12 +43,12 @@ if not key:
     st.stop()
 
 try:
-    import anthropic
+    from google import genai
 except ImportError:
-    st.error("The `anthropic` package isn't installed. Run `pip install anthropic` (it's in requirements.txt).")
+    st.error("The `google-genai` package isn't installed. Run `pip install google-genai` (it's in requirements.txt).")
     st.stop()
 
-client = anthropic.Anthropic(api_key=key)
+client = genai.Client(api_key=key)
 ctx = {"df": ui.load_data(), "zones": ui.get_zones(), "fc": ui.get_forecaster()}
 
 st.markdown("**Try:** " + "  ·  ".join(f"`{e}`" for e in EXAMPLES))

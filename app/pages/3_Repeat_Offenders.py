@@ -19,7 +19,9 @@ k = st.columns(4)
 ui.kpi(k[0], "Unique vehicles", f"{len(vc):,}")
 ui.kpi(k[1], "Repeat offenders", f"{len(repeat):,}", help="caught ≥ 2 times")
 ui.kpi(k[2], "Their share of violations", f"{rep_share*100:.0f}%")
-ui.kpi(k[3], "Worst offender", f"{int(vc.iloc[0])}×", help=f"vehicle {vc.index[0]}")
+ui.kpi(k[3], "Worst offender",
+       f"{int(vc.iloc[0])}×" if len(vc) else "—",
+       help=f"vehicle {vc.index[0]}" if len(vc) else None)
 
 st.markdown("---")
 left, right = st.columns([1.3, 1], gap="large")

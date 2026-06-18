@@ -89,13 +89,12 @@ def zone_layer(zones):
         line_width_min_pixels=0.5, pickable=True, auto_highlight=True)
 
 def plan_layers(plan):
-    p = plan.copy()
-    halo = pdk.Layer("ScatterplotLayer", data=p, get_position=["lon","lat"],
+    halo = pdk.Layer("ScatterplotLayer", data=plan, get_position=["lon","lat"],
                      get_radius=420, get_fill_color=[76,139,245,55], pickable=False)
-    pts  = pdk.Layer("ScatterplotLayer", data=p, get_position=["lon","lat"],
+    pts  = pdk.Layer("ScatterplotLayer", data=plan, get_position=["lon","lat"],
                      get_radius=120, get_fill_color=[76,139,245], stroked=True,
                      get_line_color=[255,255,255], line_width_min_pixels=2, pickable=True)
-    txt  = pdk.Layer("TextLayer", data=p, get_position=["lon","lat"], get_text="team",
+    txt  = pdk.Layer("TextLayer", data=plan, get_position=["lon","lat"], get_text="team",
                      get_size=13, get_color=[255,255,255], get_pixel_offset=[0,-22],
                      get_alignment_baseline="'bottom'")
     return [halo, pts, txt]

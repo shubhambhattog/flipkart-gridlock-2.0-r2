@@ -1,30 +1,103 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
+@custom-variant dark (&:is(.dark *));
+
+/* ParkPulse — night traffic-command-center. One signal-blue accent; severity ramp lives in JS (impactColor). */
 :root {
-  --bg: #0b0f17;
-  --panel: #161b26;
+  --radius: 0.7rem;
+
+  --background: #0b0f17;
+  --foreground: #e6e9ef;
+  --card: #141a27;
+  --card-foreground: #e6e9ef;
+  --popover: #131a26;
+  --popover-foreground: #e6e9ef;
+  --primary: #4c8bf5;
+  --primary-foreground: #ffffff;
+  --secondary: #1a2333;
+  --secondary-foreground: #e6e9ef;
+  --muted: #161d2a;
+  --muted-foreground: #93a0b7;
+  --accent: #1b2740;
+  --accent-foreground: #eaf1ff;
+  --destructive: #e2473b;
   --border: #232b3d;
-  --accent: #4c8bf5;
-  --text: #e6e9ef;
-  --muted: #9aa4b8;
+  --input: #2a3346;
+  --ring: #4c8bf5;
+  --chart-1: #4c8bf5;
+  --chart-2: #5ca0b4;
+  --chart-3: #f5cd5a;
+  --chart-4: #f59e41;
+  --chart-5: #e2352b;
+  --sidebar: #0a0e16;
+  --sidebar-foreground: #e6e9ef;
+  --sidebar-primary: #4c8bf5;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #161f30;
+  --sidebar-accent-foreground: #eaf1ff;
+  --sidebar-border: #19212f;
+  --sidebar-ring: #4c8bf5;
 }
 
-html, body {
-  background: var(--bg);
-  color: var(--text);
+@theme inline {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
 }
+
+@layer base {
+  * { @apply border-border outline-ring/50; }
+  body { @apply bg-background text-foreground; }
+}
+
 body {
-  font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   letter-spacing: -0.01em;
 }
 
+/* ParkPulse helpers (used by map overlays + the few bespoke surfaces) */
 .card {
-  background: linear-gradient(180deg, #171d2a 0%, #141926 100%);
+  background: linear-gradient(180deg, #161d2b 0%, #121826 100%);
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: var(--radius-xl);
 }
 .glass {
-  background: rgba(13, 17, 26, 0.72);
+  background: rgba(11, 15, 23, 0.72);
   backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.08);
 }

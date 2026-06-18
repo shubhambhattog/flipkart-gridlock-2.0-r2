@@ -16,8 +16,8 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${inter.variable} h-full antialiased`}>
-      <body className="h-full">
+    <html lang="en" className={`dark h-full antialiased ${inter.variable}`}>
+      <body className="h-full bg-background text-foreground">
         <div className="flex h-screen">
           <Nav />
           <main className="flex-1 overflow-y-auto">{children}</main>

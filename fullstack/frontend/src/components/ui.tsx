@@ -2,15 +2,22 @@
 import { ReactNode } from "react";
 
 export function Card({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return <div className={`card p-6 ${className}`}>{children}</div>;
+  return <div className={`rounded-xl border border-border bg-card p-6 ${className}`}>{children}</div>;
 }
 
-export function Kpi({ label, value, hint }: { label: string; value: ReactNode; hint?: string }) {
+export function Kpi({
+  label, value, hint, icon,
+}: {
+  label: string; value: ReactNode; hint?: string; icon?: ReactNode;
+}) {
   return (
-    <div className="glass rounded-2xl px-5 py-4">
-      <div className="text-2xl font-bold">{value}</div>
-      <div className="text-xs text-[var(--muted)]">{label}</div>
-      {hint && <div className="mt-1 text-[10px] text-[var(--muted)]">{hint}</div>}
+    <div className="rounded-xl border border-border bg-card px-5 py-4">
+      <div className="flex items-center justify-between">
+        <div className="text-xs font-medium text-muted-foreground">{label}</div>
+        {icon && <div className="text-muted-foreground/70">{icon}</div>}
+      </div>
+      <div className="mt-1.5 text-2xl font-semibold tracking-tight tabular-nums">{value}</div>
+      {hint && <div className="mt-1 text-[11px] text-muted-foreground">{hint}</div>}
     </div>
   );
 }
@@ -33,12 +40,12 @@ export function Bars({
             key={d.key}
             title={`${d.key}: ${d.value}`}
             className="flex-1 rounded-t transition-all"
-            style={{ height: `${(d.value / max) * 100}%`, background: colorFor ? colorFor(d) : "var(--accent)" }}
+            style={{ height: `${(d.value / max) * 100}%`, background: colorFor ? colorFor(d) : "var(--primary)" }}
           />
         ))}
       </div>
       {labels && (
-        <div className="mt-1 flex justify-between text-[10px] text-[var(--muted)]">
+        <div className="mt-1 flex justify-between text-[10px] text-muted-foreground">
           <span>{labels[0]}</span><span>{labels[1]}</span><span>{labels[2]}</span>
         </div>
       )}
@@ -47,9 +54,13 @@ export function Bars({
 }
 
 export function Spinner({ label = "Loading…" }: { label?: string }) {
-  return <div className="grid place-items-center py-24 text-sm text-[var(--muted)]">{label}</div>;
+  return <div className="grid place-items-center py-24 text-sm text-muted-foreground">{label}</div>;
 }
 
 export function Pill({ children }: { children: ReactNode }) {
-  return <span className="rounded-full bg-white/5 px-2.5 py-1 text-xs text-[var(--muted)]">{children}</span>;
+  return (
+    <span className="rounded-full border border-border bg-secondary/60 px-2.5 py-1 text-xs text-muted-foreground">
+      {children}
+    </span>
+  );
 }

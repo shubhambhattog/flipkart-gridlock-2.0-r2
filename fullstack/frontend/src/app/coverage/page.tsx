@@ -38,10 +38,10 @@ function RoiChart({ rows, teams }: { rows: RoiRow[]; teams: number }) {
       {/* even baseline */}
       <path d={path("even")} fill="none" stroke="#5b667d" strokeWidth={2} strokeDasharray="5 4" />
       {/* optimal curve */}
-      <path d={path("optimal")} fill="none" stroke="var(--accent)" strokeWidth={2.5} />
+      <path d={path("optimal")} fill="none" stroke="var(--primary)" strokeWidth={2.5} />
       {/* selected marker */}
       <line x1={x(sel.teams)} x2={x(sel.teams)} y1={PAD.t} y2={PAD.t + ih} stroke="#4c8bf5" strokeWidth={1} strokeOpacity={0.35} />
-      <circle cx={x(sel.teams)} cy={y(sel.optimal)} r={4.5} fill="var(--accent)" stroke="#0b0f17" strokeWidth={2} />
+      <circle cx={x(sel.teams)} cy={y(sel.optimal)} r={4.5} fill="var(--primary)" stroke="#0b0f17" strokeWidth={2} />
       {/* x ticks */}
       {rows
         .filter((_, i) => i % Math.ceil(rows.length / 8) === 0 || i === rows.length - 1)
@@ -103,7 +103,7 @@ export default function CoveragePage() {
     <div className="mx-auto max-w-6xl px-6 py-10">
       <header className="mb-6">
         <h1 className="text-3xl font-bold">Coverage &amp; ROI</h1>
-        <p className="mt-2 max-w-2xl text-[var(--muted)]">
+        <p className="mt-2 max-w-2xl text-[var(--muted-foreground)]">
           How much of the problem a handful of well-placed teams can mop up — and the hours enforcement keeps missing.
         </p>
       </header>
@@ -113,17 +113,17 @@ export default function CoveragePage() {
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <h3 className="text-lg font-bold">Staffing ROI — targeted vs even</h3>
-            <p className="mt-1 text-sm text-[var(--muted)]">
+            <p className="mt-1 text-sm text-[var(--muted-foreground)]">
               Concentrate teams on the worst zones for a shift, and see how fast coverage climbs.
             </p>
           </div>
           <div className="flex flex-wrap items-end gap-3">
-            <label className="flex flex-col gap-1 text-[11px] text-[var(--muted)]">
+            <label className="flex flex-col gap-1 text-[11px] text-[var(--muted-foreground)]">
               Weekday
               <select
                 value={dow}
                 onChange={(e) => setDow(Number(e.target.value))}
-                className="rounded-lg border border-[var(--border)] bg-[#0b0f17] px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]"
+                className="rounded-lg border border-[var(--border)] bg-[#0b0f17] px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--primary)]"
               >
                 {DOW.map((d, i) => (
                   <option key={d} value={i}>
@@ -132,12 +132,12 @@ export default function CoveragePage() {
                 ))}
               </select>
             </label>
-            <label className="flex flex-col gap-1 text-[11px] text-[var(--muted)]">
+            <label className="flex flex-col gap-1 text-[11px] text-[var(--muted-foreground)]">
               Shift start
               <select
                 value={start}
                 onChange={(e) => setStart(Number(e.target.value))}
-                className="rounded-lg border border-[var(--border)] bg-[#0b0f17] px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]"
+                className="rounded-lg border border-[var(--border)] bg-[#0b0f17] px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--primary)]"
               >
                 {hours.map((h) => (
                   <option key={h} value={h}>
@@ -146,12 +146,12 @@ export default function CoveragePage() {
                 ))}
               </select>
             </label>
-            <label className="flex flex-col gap-1 text-[11px] text-[var(--muted)]">
+            <label className="flex flex-col gap-1 text-[11px] text-[var(--muted-foreground)]">
               Shift end
               <select
                 value={end}
                 onChange={(e) => setEnd(Number(e.target.value))}
-                className="rounded-lg border border-[var(--border)] bg-[#0b0f17] px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]"
+                className="rounded-lg border border-[var(--border)] bg-[#0b0f17] px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--primary)]"
               >
                 {hours.map((h) => (
                   <option key={h} value={h}>
@@ -160,7 +160,7 @@ export default function CoveragePage() {
                 ))}
               </select>
             </label>
-            <label className="flex flex-col gap-1 text-[11px] text-[var(--muted)]">
+            <label className="flex flex-col gap-1 text-[11px] text-[var(--muted-foreground)]">
               Teams: <span className="text-[var(--text)]">{teams}</span>
               <input
                 type="range"
@@ -168,7 +168,7 @@ export default function CoveragePage() {
                 max={20}
                 value={teams}
                 onChange={(e) => setTeams(Number(e.target.value))}
-                className="w-36 accent-[var(--accent)]"
+                className="w-36 accent-[var(--primary)]"
               />
             </label>
           </div>
@@ -200,9 +200,9 @@ export default function CoveragePage() {
 
             <div className="mt-6 grid gap-6 lg:grid-cols-[1.4fr_1fr]">
               <div>
-                <div className="mb-2 flex items-center gap-4 text-[11px] text-[var(--muted)]">
+                <div className="mb-2 flex items-center gap-4 text-[11px] text-[var(--muted-foreground)]">
                   <span className="flex items-center gap-1.5">
-                    <span className="inline-block h-0.5 w-5" style={{ background: "var(--accent)" }} />
+                    <span className="inline-block h-0.5 w-5" style={{ background: "var(--primary)" }} />
                     Targeted
                   </span>
                   <span className="flex items-center gap-1.5">
@@ -217,7 +217,7 @@ export default function CoveragePage() {
               <div className="overflow-hidden rounded-xl border border-[var(--border)]">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="bg-white/[0.03] text-[11px] uppercase tracking-wide text-[var(--muted)]">
+                    <tr className="bg-white/[0.03] text-[11px] uppercase tracking-wide text-[var(--muted-foreground)]">
                       <th className="px-3 py-2 text-left font-medium">Teams</th>
                       <th className="px-3 py-2 text-right font-medium">Targeted</th>
                       <th className="px-3 py-2 text-right font-medium">Even</th>
@@ -236,11 +236,11 @@ export default function CoveragePage() {
                             style={{ background: active ? "rgba(76,139,245,0.10)" : undefined }}
                           >
                             <td className="px-3 py-1.5">{r.teams}</td>
-                            <td className="px-3 py-1.5 text-right" style={{ color: active ? "var(--accent)" : undefined }}>
+                            <td className="px-3 py-1.5 text-right" style={{ color: active ? "var(--primary)" : undefined }}>
                               {Math.round(r.optimal * 100)}%
                             </td>
-                            <td className="px-3 py-1.5 text-right text-[var(--muted)]">{Math.round(r.even * 100)}%</td>
-                            <td className="px-3 py-1.5 text-right text-[var(--muted)]">
+                            <td className="px-3 py-1.5 text-right text-[var(--muted-foreground)]">{Math.round(r.even * 100)}%</td>
+                            <td className="px-3 py-1.5 text-right text-[var(--muted-foreground)]">
                               {(r.marginal * 100).toFixed(1)}%
                             </td>
                           </tr>
@@ -251,7 +251,7 @@ export default function CoveragePage() {
               </div>
             </div>
 
-            <p className="mt-4 text-sm text-[var(--muted)]">
+            <p className="mt-4 text-sm text-[var(--muted-foreground)]">
               {derived.k50 != null ? (
                 <>
                   Just <span className="text-[var(--text)]">{derived.k50} teams</span> on the right corners cover half of all{" "}
@@ -271,13 +271,13 @@ export default function CoveragePage() {
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
             <h3 className="text-lg font-bold">Coverage blind spots</h3>
-            <p className="mt-1 text-sm text-[var(--muted)]">
+            <p className="mt-1 text-sm text-[var(--muted-foreground)]">
               Share of enforcement activity by hour of day — when officers actually write tickets.
             </p>
           </div>
-          <div className="flex items-center gap-3 text-[11px] text-[var(--muted)]">
+          <div className="flex items-center gap-3 text-[11px] text-[var(--muted-foreground)]">
             <span className="flex items-center gap-1.5">
-              <span className="inline-block h-2.5 w-2.5 rounded-sm" style={{ background: "var(--accent)" }} /> Morning (&lt;1 PM)
+              <span className="inline-block h-2.5 w-2.5 rounded-sm" style={{ background: "var(--primary)" }} /> Morning (&lt;1 PM)
             </span>
             <span className="flex items-center gap-1.5">
               <span className="inline-block h-2.5 w-2.5 rounded-sm" style={{ background: "#E2352B" }} /> Evening peak (5–9 PM)
@@ -320,14 +320,14 @@ export default function CoveragePage() {
                   Number(d.key) >= 17 && Number(d.key) <= 21
                     ? "#E2352B"
                     : Number(d.key) < 13
-                      ? "var(--accent)"
+                      ? "var(--primary)"
                       : "#3a4254"
                 }
                 labels={["12 AM", "12 PM", "11 PM"]}
               />
             </div>
 
-            <p className="mt-4 text-sm text-[var(--muted)]">
+            <p className="mt-4 text-sm text-[var(--muted-foreground)]">
               Targeting pays, but timing leaks: {meta.coverage_summary.before_1pm}% of tickets land before 1 PM while only{" "}
               {meta.coverage_summary.evening_5_9}% hit the 5–9 PM rush. Evenings are the blind spot.
             </p>

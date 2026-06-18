@@ -7,7 +7,7 @@ import { Card, Kpi, Spinner } from "@/components/ui";
 const ZoneMap = dynamic(() => import("@/components/ZoneMap"), {
   ssr: false,
   loading: () => (
-    <div className="absolute inset-0 grid place-items-center text-[var(--muted)]">Loading map…</div>
+    <div className="absolute inset-0 grid place-items-center text-[var(--muted-foreground)]">Loading map…</div>
   ),
 });
 
@@ -51,8 +51,8 @@ function MultiSelect({
               aria-pressed={on}
               className={`rounded-full px-3 py-1 text-xs transition-colors ${
                 on
-                  ? "bg-[var(--accent)] text-white"
-                  : "bg-white/5 text-[var(--muted)] hover:bg-white/10"
+                  ? "bg-[var(--primary)] text-white"
+                  : "bg-white/5 text-[var(--muted-foreground)] hover:bg-white/10"
               }`}
             >
               {o}
@@ -60,7 +60,7 @@ function MultiSelect({
           );
         })}
       </div>
-      <div className="mt-2 flex gap-3 text-[11px] text-[var(--muted)]">
+      <div className="mt-2 flex gap-3 text-[11px] text-[var(--muted-foreground)]">
         <button type="button" onClick={onAll} className="hover:text-[var(--text)]">
           {allLabel}
         </button>
@@ -153,7 +153,7 @@ export default function ExplorerPage() {
     <div className="mx-auto max-w-6xl px-6 py-10">
       <header className="mb-6">
         <h1 className="text-2xl font-bold">Hotspot Explorer</h1>
-        <p className="mt-1 text-sm text-[var(--muted)]">
+        <p className="mt-1 text-sm text-[var(--muted-foreground)]">
           Slice 298,000 violations by day, hour, type and police station — hotspots re-rank live as you
           filter.
         </p>
@@ -167,7 +167,7 @@ export default function ExplorerPage() {
           <Card className="mb-6">
             <div className="grid gap-6 md:grid-cols-2">
               <div>
-                <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
+                <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">
                   Weekdays
                 </div>
                 <MultiSelect
@@ -180,11 +180,11 @@ export default function ExplorerPage() {
               </div>
 
               <div>
-                <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
+                <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">
                   Hour range
                 </div>
                 <div className="flex items-center gap-3">
-                  <label className="flex items-center gap-2 text-sm text-[var(--muted)]">
+                  <label className="flex items-center gap-2 text-sm text-[var(--muted-foreground)]">
                     From
                     <input
                       type="number"
@@ -194,10 +194,10 @@ export default function ExplorerPage() {
                       onChange={(e) =>
                         setH0(Math.max(0, Math.min(23, Number(e.target.value) || 0)))
                       }
-                      className="w-16 rounded-lg border border-[var(--border)] bg-[var(--panel)] px-2 py-1.5 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]"
+                      className="w-16 rounded-lg border border-[var(--border)] bg-[var(--panel)] px-2 py-1.5 text-sm text-[var(--text)] outline-none focus:border-[var(--primary)]"
                     />
                   </label>
-                  <label className="flex items-center gap-2 text-sm text-[var(--muted)]">
+                  <label className="flex items-center gap-2 text-sm text-[var(--muted-foreground)]">
                     To
                     <input
                       type="number"
@@ -207,17 +207,17 @@ export default function ExplorerPage() {
                       onChange={(e) =>
                         setH1(Math.max(0, Math.min(23, Number(e.target.value) || 0)))
                       }
-                      className="w-16 rounded-lg border border-[var(--border)] bg-[var(--panel)] px-2 py-1.5 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]"
+                      className="w-16 rounded-lg border border-[var(--border)] bg-[var(--panel)] px-2 py-1.5 text-sm text-[var(--text)] outline-none focus:border-[var(--primary)]"
                     />
                   </label>
-                  <span className="text-xs text-[var(--muted)]">
+                  <span className="text-xs text-[var(--muted-foreground)]">
                     {hourLabel(Math.min(h0, h1))} – {hourLabel(Math.max(h0, h1))}
                   </span>
                 </div>
               </div>
 
               <div>
-                <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
+                <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">
                   Violation types
                 </div>
                 <MultiSelect
@@ -230,7 +230,7 @@ export default function ExplorerPage() {
               </div>
 
               <div>
-                <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
+                <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">
                   Police stations{" "}
                   <span className="font-normal normal-case text-[10px]">(none = all)</span>
                 </div>
@@ -277,18 +277,18 @@ export default function ExplorerPage() {
               <div className="lg:col-span-3">
                 <div className="relative h-[460px] overflow-hidden rounded-2xl border border-[var(--border)]">
                   {loading && !res ? (
-                    <div className="absolute inset-0 grid place-items-center text-[var(--muted)]">
+                    <div className="absolute inset-0 grid place-items-center text-[var(--muted-foreground)]">
                       Loading…
                     </div>
                   ) : zones.length === 0 ? (
-                    <div className="absolute inset-0 grid place-items-center px-6 text-center text-sm text-[var(--muted)]">
+                    <div className="absolute inset-0 grid place-items-center px-6 text-center text-sm text-[var(--muted-foreground)]">
                       No violations match these filters. Widen the hour range or add weekdays / types.
                     </div>
                   ) : (
                     <ZoneMap zones={zones} />
                   )}
                   {loading && res && (
-                    <div className="absolute right-3 top-3 rounded-full bg-black/60 px-3 py-1 text-[11px] text-[var(--muted)]">
+                    <div className="absolute right-3 top-3 rounded-full bg-black/60 px-3 py-1 text-[11px] text-[var(--muted-foreground)]">
                       Updating…
                     </div>
                   )}
@@ -300,30 +300,30 @@ export default function ExplorerPage() {
                 <Card className="h-[460px] overflow-hidden">
                   <div className="flex items-baseline justify-between">
                     <h3 className="text-lg font-bold">Top zones</h3>
-                    <span className="text-xs text-[var(--muted)]">by impact score</span>
+                    <span className="text-xs text-[var(--muted-foreground)]">by impact score</span>
                   </div>
                   {zones.length === 0 ? (
-                    <p className="mt-6 text-sm text-[var(--muted)]">
+                    <p className="mt-6 text-sm text-[var(--muted-foreground)]">
                       No matching zones yet — relax a filter to surface hotspots.
                     </p>
                   ) : (
                     <ul className="mt-4 space-y-2.5 overflow-y-auto pr-1" style={{ maxHeight: 372 }}>
                       {topZones.map((z, i) => (
                         <li key={z.gh6} className="flex items-center gap-3">
-                          <span className="w-5 text-right text-sm text-[var(--muted)]">{i + 1}</span>
+                          <span className="w-5 text-right text-sm text-[var(--muted-foreground)]">{i + 1}</span>
                           <div className="min-w-0 flex-1">
                             <div className="truncate text-sm">{z.label}</div>
-                            <div className="truncate text-[11px] text-[var(--muted)]">
+                            <div className="truncate text-[11px] text-[var(--muted-foreground)]">
                               {z.top_violation}
                             </div>
                           </div>
-                          <span className="text-xs text-[var(--muted)]">{fmt(z.violations)}</span>
+                          <span className="text-xs text-[var(--muted-foreground)]">{fmt(z.violations)}</span>
                           <div className="h-2 w-16 overflow-hidden rounded bg-[#222b3d]">
                             <div
                               className="h-full"
                               style={{
                                 width: `${(z.impact_score / maxImpact) * 100}%`,
-                                background: "var(--accent)",
+                                background: "var(--primary)",
                               }}
                             />
                           </div>
@@ -336,7 +336,7 @@ export default function ExplorerPage() {
             </div>
           )}
 
-          <p className="mt-6 text-center text-xs text-[var(--muted)]">
+          <p className="mt-6 text-center text-xs text-[var(--muted-foreground)]">
             Showing {fmt(zones.length)} zones · {fmt(count)} violations across{" "}
             {dows.length || "no"} weekday{dows.length === 1 ? "" : "s"} · hotspots re-rank live as you
             filter.

@@ -29,7 +29,7 @@ export default function OffendersPage() {
           <h1 className="text-3xl font-bold">Repeat-Offender Intelligence</h1>
           <Pill>🔁 owner notices · escalation · tow priority</Pill>
         </div>
-        <p className="mt-2 max-w-2xl text-[var(--muted)]">
+        <p className="mt-2 max-w-2xl text-[var(--muted-foreground)]">
           A small group of vehicles is caught again and again. Surfacing them turns reactive ticketing into
           targeted accountability.
         </p>
@@ -62,14 +62,14 @@ export default function OffendersPage() {
             <Card className="lg:col-span-3">
               <div className="flex items-baseline justify-between">
                 <h3 className="text-lg font-bold">Top 25 repeat offenders</h3>
-                <span className="text-xs text-[var(--muted)]">Times caught</span>
+                <span className="text-xs text-[var(--muted-foreground)]">Times caught</span>
               </div>
-              <p className="mt-1 text-sm text-[var(--muted)]">
+              <p className="mt-1 text-sm text-[var(--muted-foreground)]">
                 Ranked by the number of distinct violations attributed to each vehicle.
               </p>
               <div className="mt-4 max-h-[460px] overflow-y-auto">
                 <table className="w-full border-collapse text-sm">
-                  <thead className="sticky top-0 bg-[#141926] text-left text-xs text-[var(--muted)]">
+                  <thead className="sticky top-0 bg-[#141926] text-left text-xs text-[var(--muted-foreground)]">
                     <tr>
                       <th className="w-12 py-2 pr-2 font-medium">#</th>
                       <th className="py-2 pr-2 font-medium">Vehicle</th>
@@ -82,7 +82,7 @@ export default function OffendersPage() {
                       const max = offenders[0]?.violations || 1;
                       return (
                         <tr key={o.vehicle} className="border-t border-[var(--border)]">
-                          <td className="py-2 pr-2 text-[var(--muted)]">{i + 1}</td>
+                          <td className="py-2 pr-2 text-[var(--muted-foreground)]">{i + 1}</td>
                           <td className="py-2 pr-2 font-mono">{o.vehicle}</td>
                           <td className="py-2 pr-2 text-right font-semibold">{fmt(o.violations)}</td>
                           <td className="py-2">
@@ -91,7 +91,7 @@ export default function OffendersPage() {
                                 className="h-full"
                                 style={{
                                   width: `${(o.violations / max) * 100}%`,
-                                  background: i < 3 ? "#E2352B" : "var(--accent)",
+                                  background: i < 3 ? "#E2352B" : "var(--primary)",
                                 }}
                               />
                             </div>
@@ -107,13 +107,13 @@ export default function OffendersPage() {
             <div className="grid content-start gap-6 lg:col-span-2">
               <Card>
                 <h3 className="text-lg font-bold">Offence frequency, top 25</h3>
-                <p className="mt-1 text-sm text-[var(--muted)]">
+                <p className="mt-1 text-sm text-[var(--muted-foreground)]">
                   The steep drop-off is the signal: a handful of plates tower over the rest.
                 </p>
                 <div className="mt-5">
                   <Bars
                     data={offenders.slice(0, 25).map((o, i) => ({ key: i + 1, value: o.violations }))}
-                    colorFor={(d) => (Number(d.key) <= 3 ? "#E2352B" : "var(--accent)")}
+                    colorFor={(d) => (Number(d.key) <= 3 ? "#E2352B" : "var(--primary)")}
                     labels={["#1", "#13", "#25"]}
                   />
                 </div>
@@ -121,7 +121,7 @@ export default function OffendersPage() {
 
               <Card>
                 <h3 className="text-lg font-bold">Why this list matters</h3>
-                <p className="mt-2 text-sm text-[var(--muted)]">
+                <p className="mt-2 text-sm text-[var(--muted-foreground)]">
                   Vehicles caught many times aren&apos;t random — they&apos;re prime candidates for{" "}
                   <span className="text-[var(--text)]">owner notices</span>,{" "}
                   <span className="text-[var(--text)]">escalated penalties</span>, and{" "}
@@ -137,7 +137,7 @@ export default function OffendersPage() {
             </div>
           </div>
 
-          <p className="mt-6 text-center text-sm text-[var(--muted)]">
+          <p className="mt-6 text-center text-sm text-[var(--muted-foreground)]">
             {meta.repeat.share_pct}% of violations trace back to repeat offenders — roughly{" "}
             <span className="text-[var(--text)]">15% of vehicles cause a third of all violations.</span>
           </p>

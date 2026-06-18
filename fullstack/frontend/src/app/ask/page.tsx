@@ -7,7 +7,7 @@ import { Spinner } from "@/components/ui";
 const ZoneMap = dynamic(() => import("@/components/ZoneMap"), {
   ssr: false,
   loading: () => (
-    <div className="absolute inset-0 grid place-items-center text-[var(--muted)]">Loading map…</div>
+    <div className="absolute inset-0 grid place-items-center text-[var(--muted-foreground)]">Loading map…</div>
   ),
 });
 
@@ -74,7 +74,7 @@ export default function AskPage() {
       {/* Header */}
       <header className="shrink-0 border-b border-[var(--border)] px-6 py-5">
         <h1 className="text-2xl font-bold">Ask ParkPulse 🤖</h1>
-        <p className="mt-1 text-sm text-[var(--muted)]">
+        <p className="mt-1 text-sm text-[var(--muted-foreground)]">
           Your AI co-pilot for enforcement planning — ask in plain English, Hindi or Kannada.
         </p>
       </header>
@@ -85,7 +85,7 @@ export default function AskPage() {
           {messages.map((m, i) =>
             m.role === "user" ? (
               <div key={i} className="flex justify-end">
-                <div className="max-w-[80%] rounded-2xl rounded-br-md bg-[var(--accent)] px-4 py-2.5 text-sm text-white">
+                <div className="max-w-[80%] rounded-2xl rounded-br-md bg-[var(--primary)] px-4 py-2.5 text-sm text-white">
                   {m.text}
                 </div>
               </div>
@@ -104,7 +104,7 @@ export default function AskPage() {
                     <div className="card overflow-hidden p-0">
                       <table className="w-full text-sm">
                         <thead>
-                          <tr className="border-b border-[var(--border)] text-left text-xs text-[var(--muted)]">
+                          <tr className="border-b border-[var(--border)] text-left text-xs text-[var(--muted-foreground)]">
                             <th className="px-4 py-2.5 font-medium">Team</th>
                             <th className="px-4 py-2.5 font-medium">Zone</th>
                             <th className="px-4 py-2.5 text-right font-medium">Exp. catches</th>
@@ -117,7 +117,7 @@ export default function AskPage() {
                               <td className="px-4 py-2.5 font-medium">{d.team}</td>
                               <td className="px-4 py-2.5">
                                 <div className="truncate">{d.label}</div>
-                                <div className="text-[11px] text-[var(--muted)]">{d.top_violation}</div>
+                                <div className="text-[11px] text-[var(--muted-foreground)]">{d.top_violation}</div>
                               </td>
                               <td className="px-4 py-2.5 text-right tabular-nums">{fmt(d.pred_load)}</td>
                               <td className="px-4 py-2.5 text-right">
@@ -127,11 +127,11 @@ export default function AskPage() {
                                       className="h-full"
                                       style={{
                                         width: `${Math.min(100, d.impact_score)}%`,
-                                        background: "var(--accent)",
+                                        background: "var(--primary)",
                                       }}
                                     />
                                   </div>
-                                  <span className="w-7 text-right tabular-nums text-xs text-[var(--muted)]">
+                                  <span className="w-7 text-right tabular-nums text-xs text-[var(--muted-foreground)]">
                                     {Math.round(d.impact_score)}
                                   </span>
                                 </div>
@@ -146,7 +146,7 @@ export default function AskPage() {
                     <div className="relative h-[360px] w-full overflow-hidden rounded-2xl border border-[var(--border)]">
                       <ZoneMap zones={[]} plan={m.plan} zoom={11.2} />
                     </div>
-                    <p className="text-xs text-[var(--muted)]">
+                    <p className="text-xs text-[var(--muted-foreground)]">
                       {m.plan.length} {m.plan.length === 1 ? "team" : "teams"} placed at the highest-impact zones
                       for this window — pins show where to stand.
                     </p>
@@ -176,7 +176,7 @@ export default function AskPage() {
                 key={ex}
                 type="button"
                 onClick={() => fillExample(ex)}
-                className="rounded-full border border-[var(--border)] bg-white/5 px-3 py-1.5 text-xs text-[var(--muted)] transition-colors hover:border-[var(--accent)] hover:text-[var(--text)]"
+                className="rounded-full border border-[var(--border)] bg-white/5 px-3 py-1.5 text-xs text-[var(--muted-foreground)] transition-colors hover:border-[var(--primary)] hover:text-[var(--text)]"
               >
                 {ex}
               </button>
@@ -194,12 +194,12 @@ export default function AskPage() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask in plain English, Hindi or Kannada…"
-              className="flex-1 rounded-xl border border-[var(--border)] bg-[var(--panel)] px-4 py-2.5 text-sm outline-none transition-colors placeholder:text-[var(--muted)] focus:border-[var(--accent)]"
+              className="flex-1 rounded-xl border border-[var(--border)] bg-[var(--panel)] px-4 py-2.5 text-sm outline-none transition-colors placeholder:text-[var(--muted-foreground)] focus:border-[var(--primary)]"
             />
             <button
               type="submit"
               disabled={thinking || !input.trim()}
-              className="rounded-xl bg-[var(--accent)] px-5 py-2.5 text-sm font-medium text-white transition-opacity disabled:cursor-not-allowed disabled:opacity-40"
+              className="rounded-xl bg-[var(--primary)] px-5 py-2.5 text-sm font-medium text-white transition-opacity disabled:cursor-not-allowed disabled:opacity-40"
             >
               Send
             </button>

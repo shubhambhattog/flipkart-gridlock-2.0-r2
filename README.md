@@ -11,7 +11,7 @@ patrol teams for maximum impact.
 
 It is not a static dashboard — it is a closed loop: **detect → score → forecast → deploy → target.**
 
-> 📖 **Full solution write-up — the idea, logic and algorithms behind every module (for the team *and* the judges):** see **[SOLUTION.md](SOLUTION.md)**.
+> 📖 **Full solution write-up — the idea, logic and algorithms behind every module (for the team *and* the judges):** see **[SOLUTION.md](SOLUTION.md)**. For a from-scratch walkthrough + judge-Q&A prep (to present and defend it), see **[WALKTHROUGH.md](WALKTHROUGH.md)**.
 
 ---
 

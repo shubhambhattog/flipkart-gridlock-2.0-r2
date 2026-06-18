@@ -65,10 +65,24 @@ Illegal parking chokes Bengaluru's busiest roads.
 
 ---
 
+# Coverage & ROI — targeting pays
+- A handful of zones hold most of the action — a few well-placed teams capture a large share of violations.
+- We surface the **staffing sweet spot**: past it, each extra team adds < 1 percentage point of coverage.
+- And the **blind spot**: ~93% of enforcement is before 1 PM, almost none in the 5–9 PM evening peak.
+
+---
+
 # Target repeat offenders
 - **15%** of vehicles cause **34%** of all violations.
 - Auto-generated target list → owner notices and escalated penalties.
 - A short, high-value action list with outsized impact.
+
+---
+
+# Ask ParkPulse — the AI co-pilot 🤖
+- Ask in plain **English, Hindi or Kannada**: *"Plan 6 teams for Friday evening around KR Market."*
+- **Gemini function-calling** runs our *real* forecaster + optimiser and returns an actual plan + map.
+- Not a chatbot — a true agent over the models. A field officer just **asks**; no dashboard training needed.
 
 ---
 

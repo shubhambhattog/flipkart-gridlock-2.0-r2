@@ -15,14 +15,16 @@ It is not a static dashboard — it is a closed loop: **detect → score → for
 
 ---
 
-## What it does (4 modules)
+## What it does (6 modules)
 
 | Page | Capability |
 |---|---|
 | **Command Center** | City-wide 3-D hotspot map, KPIs, and the enforcement-coverage *blind-spot* insight |
 | **Hotspot Explorer** | Slice 298K records live by time / weekday / violation type / police station; hotspots re-rank instantly |
 | **Forecast & Patrol Planner** | Predicts enforcement load per *zone × weekday × hour* and auto-generates a spatially-spread deployment plan for *N* teams |
+| **Coverage & ROI** | Quantifies the targeting payoff (Pareto + data-driven staffing sweet-spot) and surfaces the evening enforcement blind spot |
 | **Repeat-Offender Intelligence** | Surfaces the chronic 15% of vehicles responsible for ~34% of violations |
+| **Ask ParkPulse** 🤖 | Natural-language co-pilot (English / Hindi / Kannada) — **Gemini** function-calling over the *real* models returns actual patrol plans |
 
 **Congestion Impact Score (0–100):** `violations × avg_severity × flow_multiplier`, where the flow
 multiplier rewards junction-proximity and main-road blocking. Transparent and monotone by design.

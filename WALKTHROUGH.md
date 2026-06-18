@@ -168,6 +168,22 @@ owner notices or escalate penalties — a few hundred vehicles with outsized imp
 **Technical:** Frequency count over anonymised vehicle tokens, bucketed by how many times each was caught;
 the 6+ buckets are the action list. (15% of vehicles → 34% of violations.)
 
+### ⑥ Coverage & ROI — proof that targeting pays
+**Plain:** Two things. One, *targeting matters*: a handful of zones hold most of the action, so a few teams
+placed well see a big share of violations — and there's a "sweet spot" past which extra teams add little.
+Two, the *blind spot*: enforcement is 93% before 1 PM and almost nothing in the evening — a clear gap.
+**Technical:** A Pareto/coverage curve — cumulative share of predicted load captured by the top-K zones vs an
+even spread; we surface the K where half the violations are concentrated, and the K where the marginal team
+adds < 1 percentage point (the staffing sweet spot). Plus enforcement share by hour, with the evening gap flagged.
+
+### ⑦ Ask ParkPulse — the AI co-pilot *(the surprise)*
+**Plain:** An officer types (or speaks) in plain English, Hindi or Kannada — *"Plan 6 teams for Friday
+evening around KR Market"* — and gets back a **real** deployment plan with a map, instantly.
+**Technical:** Google **Gemini** with **function-calling** over the *same* `core.py` functions
+(`make_patrol_plan`, `top_hotspots`, `coverage_stats`, `repeat_offenders`). The model decides which tool to
+call, we run the real computation, and it composes the answer — so every number is grounded, not generated.
+It's a true agent, not a chatbot: ask it to deploy teams and it runs the actual forecaster + optimiser.
+
 ---
 
 ## 5. Why we built it this way
@@ -276,8 +292,15 @@ infrastructure.
 
 **Q: "What did you build versus take off the shelf?"**
 A: We built **all the intelligence** ourselves — the scoring, the forecaster, the optimiser — in plain
-pandas/numpy. The off-the-shelf parts are only the visual layer (Streamlit, map and chart libraries). Nothing
-off-the-shelf does the thinking.
+pandas/numpy. The off-the-shelf parts are only the visual layer (Streamlit, map and chart libraries) and the
+LLM (Gemini) that powers the co-pilot's language understanding. Nothing off-the-shelf does the *thinking* —
+the LLM only routes a question to our functions; the actual plan comes from our models.
+
+**Q: "Isn't the AI co-pilot just a gimmick / a wrapper around ChatGPT?"**
+A: No — it doesn't *generate* answers, it *calls our models*. Gemini's only job is to understand the question
+and pick the right tool (e.g. `make_patrol_plan`); the deployment plan it returns is computed by our real
+forecaster and optimiser on the 298K records. Every number is grounded. The value for BTP is **accessibility**
+— a field officer can ask in plain Kannada and get an actionable plan, no dashboard training needed.
 
 ### Impact
 **Q: "What's the measurable benefit?"**

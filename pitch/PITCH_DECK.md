@@ -46,10 +46,20 @@ Target length: **11–12 slides, ~2.5–3 min.** Replace `[Team Name]` before pr
 - **Visual:** Patrol Planner screenshot — team pins on the map + the deployment table.
 - **Say:** "Here's the payoff. A supervisor picks Saturday, 9 to 1, eight teams — and in two seconds gets eight deployment points, spread so teams don't bunch up, each with the violations they'll likely encounter. Download the CSV, brief the teams. Reactive enforcement becomes proactive."
 
+## SLIDE 8b — Coverage & ROI *(targeting pays)*
+- **On slide:** A few zones hold most violations → a few well-placed teams capture a big share. **Staffing sweet spot** (extra teams add < 1%). **Blind spot:** ~93% before 1 PM, near-zero evenings.
+- **Visual:** The ROI coverage curve + the evening blind-spot bar chart (Coverage & ROI page).
+- **Say:** "Targeting isn't a nicety — it's the whole game. A few zones hold most of the violations, so a handful of well-placed teams see a big share. We even show the staffing sweet spot, where extra teams stop helping — and we flag the evening blind spot you're not covering today."
+
 ## SLIDE 9 — Target repeat offenders
 - **On slide:** **15%** of vehicles cause **34%** of violations. Auto-generated target list → owner notices / escalated penalties.
 - **Visual:** Repeat-offender distribution chart + top-offenders table.
 - **Say:** "And we target the chronic minority — 15% of vehicles cause a third of all violations. ParkPulse hands BTP that short, high-value list for notices and escalated action."
+
+## SLIDE 9b — Ask ParkPulse 🤖 *(the surprise)*
+- **On slide:** Ask in **English / Hindi / Kannada** — *"Plan 6 teams for Friday evening around KR Market"* → a **real** plan + map, instantly. Powered by **Gemini function-calling** over the actual models.
+- **Visual:** The chat — a typed question → the returned deployment table + map.
+- **Say:** "And here's the surprise. An officer can just ask — in English, Hindi or Kannada — 'plan six teams for Friday evening around KR Market.' Gemini routes that to our real forecaster and optimiser and hands back an actual plan, on the map, in seconds. It's not a chatbot — it's an agent driving our models. No dashboard training; you just ask."
 
 ## SLIDE 10 — Impact & rollout
 - **On slide:** **BTP gains:** visibility · prioritization · proactive shifts · offender targeting. **Rollout:** ① Retrospective (today) → ② Nightly refresh → ③ Live ASTraM feed. *Uses only data BTP already collects.*

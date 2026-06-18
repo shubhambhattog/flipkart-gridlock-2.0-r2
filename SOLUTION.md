@@ -79,7 +79,9 @@ Delivered as a 4-page web app:
 | **Command Center** | City-wide 3-D hotspot map, headline numbers, and the enforcement *blind-spot* insight |
 | **Hotspot Explorer** | Slice 298K records live by time / weekday / violation type / station — hotspots re-rank instantly |
 | **Forecast & Patrol Planner** | Predicts load per *zone × weekday × hour* and auto-builds a spaced-out deployment plan for *N* teams |
+| **Coverage & ROI** | Quantifies the targeting payoff (Pareto + staffing sweet-spot) and exposes the evening enforcement blind spot |
 | **Repeat-Offender Intelligence** | The chronic ~15% of vehicles behind ~34% of violations, as a target list |
+| **Ask ParkPulse** | A natural-language co-pilot (English / Hindi / Kannada) — Gemini function-calling over the real models returns actual patrol plans |
 
 ---
 
@@ -267,7 +269,9 @@ round2/
   (builds zones, runs the backtest, prints a sample patrol plan). That's how we validated the model before
   a single map rendered.
 - **Tech stack:** Python · pandas / numpy (logic) · **LightGBM-grade** empirical-Bayes forecasting ·
-  **Streamlit** (app) · **pydeck / deck.gl** (3-D maps) · **Plotly** (charts).
+  **Streamlit** (app) · **pydeck / deck.gl** (3-D maps) · **Plotly** (charts) · **Google Gemini** (the
+  natural-language co-pilot, via function-calling over the same `core.py`). A polished **Next.js + deck.gl**
+  frontend is in progress for the finale (precompute → static JSON, client-side, Vercel-ready).
 - **Lightweight by design:** no GPU, no cloud dependency, no new hardware — it runs on a standard laptop
   and deploys free to Streamlit Community Cloud.
 

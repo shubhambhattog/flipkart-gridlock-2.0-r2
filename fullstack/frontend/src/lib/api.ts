@@ -44,12 +44,18 @@ export type Meta = {
 export type PatrolReq = { weekday: string; start_hour: number; end_hour: number; teams: number; area?: string };
 export type PatrolResp = { weekday: string; window: string; teams: number; plan: Deployment[] };
 export type ExplorerResp = { count: number; zones: Zone[] };
+export type ImpactSim = {
+  cutoff: string;
+  test_days: number;
+  curve: { teams: number; parkpulse: number; static: number; even: number }[];
+};
 
 export const DOW = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 // ---------------------------------------------------------------- client
 export const api = {
   meta: () => get<Meta>("/meta"),
+  impact: () => get<ImpactSim>("/impact"),
   zones: () => get<Zone[]>("/zones"),
   grid: () => get<GridCell[]>("/grid"),
   coverage: () => get<CoverageRow[]>("/coverage"),

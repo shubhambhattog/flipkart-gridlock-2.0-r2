@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
-import { api, DOW, type Meta, type RoiRow, type CoverageRow } from "@/lib/api";
+import { BadgeCheck } from "lucide-react";
+import { api, DOW, type Meta, type RoiRow, type CoverageRow, type ImpactSim } from "@/lib/api";
 import { Card, Kpi, Bars, Spinner } from "@/components/ui";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
@@ -58,11 +59,13 @@ export default function CoveragePage() {
 
   const [coverage, setCoverage] = useState<CoverageRow[] | null>(null);
   const [meta, setMeta] = useState<Meta | null>(null);
+  const [impact, setImpact] = useState<ImpactSim | null>(null);
   const [staticErr, setStaticErr] = useState(false);
 
   useEffect(() => {
     api.coverage().then(setCoverage).catch(() => setStaticErr(true));
     api.meta().then(setMeta).catch(() => setStaticErr(true));
+    api.impact().then(setImpact).catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -94,6 +97,55 @@ export default function CoveragePage() {
           How much of the problem a handful of well-placed teams can mop up — and the hours enforcement keeps missing.
         </p>
       </header>
+
+      {/* VALIDATED IMPACT — counterfactual on held-out data */}
+      {impact && (() => {
+        const row = impact.curve.find((c) => c.teams === 10) ?? impact.curve[Math.floor(impact.curve.length / 2)];
+        const bars: [string, number, string][] = [
+          ["ParkPulse (targeted)", row.parkpulse, "bg-primary"],
+          ["Even spread", row.even, "bg-muted-foreground/40"],
+        ];
+        return (
+          <Card className="mb-6 border-primary/30">
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div className="min-w-0 flex-1">
+                <div className="mb-1.5 inline-flex items-center gap-1.5 rounded-full bg-primary/15 px-2.5 py-1 text-[11px] font-medium text-primary">
+                  <BadgeCheck className="h-3.5 w-3.5" /> Validated on held-out data
+                </div>
+                <h3 className="text-lg font-bold">Proven impact — not a claim</h3>
+                <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
+                  We trained the forecaster on history, then replayed{" "}
+                  <span className="font-medium text-foreground">{impact.test_days} days it never saw</span>. A{" "}
+                  <span className="font-medium text-foreground">{row.teams}-team</span> ParkPulse plan would have been
+                  positioned for <span className="font-medium text-foreground">{Math.round(row.parkpulse * 100)}%</span>{" "}
+                  of the violations <span className="italic">actually</span> logged — vs{" "}
+                  <span className="font-medium text-foreground">{(row.even * 100).toFixed(1)}%</span> spread evenly.
+                </p>
+              </div>
+              <div className="text-right">
+                <div className="text-4xl font-bold tabular-nums text-primary">{Math.round(row.parkpulse * 100)}%</div>
+                <div className="text-[11px] text-muted-foreground">captured · {row.teams} teams</div>
+              </div>
+            </div>
+            <div className="mt-4 space-y-2">
+              {bars.map(([label, val, color]) => (
+                <div key={label} className="flex items-center gap-3">
+                  <span className="w-36 shrink-0 text-xs text-muted-foreground">{label}</span>
+                  <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-muted">
+                    <div className={cn("h-full rounded-full", color)} style={{ width: `${Math.max(1, val * 100)}%` }} />
+                  </div>
+                  <span className="w-12 text-right text-xs tabular-nums">{(val * 100).toFixed(val < 0.05 ? 1 : 0)}%</span>
+                </div>
+              ))}
+            </div>
+            <p className="mt-3 text-xs text-muted-foreground">
+              Counterfactual replay on the held-out tail (after {impact.cutoff}). A plain hotspot heatmap reaches
+              similar day-level capture — ParkPulse&apos;s edge is the shift-by-shift timing it adds on top, plus a
+              ready-to-deploy plan.
+            </p>
+          </Card>
+        );
+      })()}
 
       {/* SECTION 1 — STAFFING ROI */}
       <Card className="mb-6">

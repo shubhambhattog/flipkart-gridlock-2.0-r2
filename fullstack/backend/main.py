@@ -51,7 +51,8 @@ async def lifespan(app: FastAPI):
         df=df, zones=zones, fc=core.build_forecaster(df),
         grid=(df.groupby("gh7").agg(lat=("lat", "median"), lon=("lon", "median"),
                                     n=("lat", "size")).reset_index()),
-        meta=_build_meta(df, zones))
+        meta=_build_meta(df, zones),
+        impact=core.deployment_simulation(df))
     key = os.environ.get("GEMINI_API_KEY")
     if key:
         from google import genai
@@ -73,6 +74,10 @@ def health():
 @app.get("/meta")
 def meta():
     return STATE["meta"]
+
+@app.get("/impact")
+def impact():
+    return STATE["impact"]
 
 @app.get("/zones")
 def zones():

@@ -52,8 +52,8 @@ Read each **SAY** line aloud verbatim; do the **SCREEN** action as you say it.
 **11. [SCREEN: click "Forecast & Patrol Planner"]**
 **SAY:** "Now the payoff. ParkPulse forecasts expected violations for every zone, by weekday and hour."
 
-**12. [SCREEN: point at the "Forecast accuracy r = 0.69" KPI]**
-**SAY:** "And we validate it honestly — trained on past weeks, tested on unseen ones: correlation 0.69. Real signal, not an overfit number."
+**12. [SCREEN: point at the "Forecast accuracy r = 0.70" KPI]**
+**SAY:** "And we validate it honestly — trained on past weeks, tested on unseen ones: correlation 0.70. Real signal, not an overfit number. We even replayed a 10-team plan on 31 days the model never saw — it would've been sitting on 38% of the violations that actually got logged."
 
 **13. [SCREEN: show the controls set to Saturday · 9–13 · 8 teams]**
 **SAY:** "A supervisor just picks a shift — Saturday, 9 to 1 — and the number of teams. Say eight."

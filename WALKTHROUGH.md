@@ -49,6 +49,14 @@ throw. It complements the other docs:
 **Your north-star sentence (say it twice — open and close):**
 > *"ParkPulse turns 298,000 rows of what already happened into where to stand tomorrow."*
 
+### Proven impact (lead with this — it's the difference between a demo and a tool)
+We didn't just build it — we **proved it on data the model never saw**. In a counterfactual replay over
+**31 held-out days**, a **10-team ParkPulse plan would have been positioned for ~38% of the violations actually
+logged**, versus ~1.3% for teams spread evenly across the city. Honest framing: that's the share of
+*catchable/logged* violations (enforcement efficiency, not true demand) — but it's real evidence that the
+forecaster + optimiser put teams where the action is, with timing and a ready-to-deploy plan a static heatmap
+can't give you.
+
 ---
 
 ## 2. The story — how we got here
@@ -148,7 +156,7 @@ when you only have a few Saturdays, you blend its actual Saturdays with its over
 the Saturdays more as you collect more of them.* Formally:
 
 ```
-rate(zone, weekday, hour) = (count + α · backoff) / (n_weekday + α),   α = 5
+rate(zone, weekday, hour) = (count + α · backoff) / (n_weekday + α),   α = 12
 ```
 where `backoff` is the zone's overall rate at that hour across all weekdays. Data-rich cells keep their own
 estimate; sparse cells lean on the stable backoff. It's a deliberate **bias-variance trade**: accept a little
@@ -179,10 +187,13 @@ adds < 1 percentage point (the staffing sweet spot). Plus enforcement share by h
 ### ⑦ Ask ParkPulse — the AI co-pilot *(the surprise)*
 **Plain:** An officer types (or speaks) in plain English, Hindi or Kannada — *"Plan 6 teams for Friday
 evening around KR Market"* — and gets back a **real** deployment plan with a map, instantly.
-**Technical:** Google **Gemini** with **function-calling** over the *same* `core.py` functions
-(`make_patrol_plan`, `top_hotspots`, `coverage_stats`, `repeat_offenders`). The model decides which tool to
-call, we run the real computation, and it composes the answer — so every number is grounded, not generated.
-It's a true agent, not a chatbot: ask it to deploy teams and it runs the actual forecaster + optimiser.
+**Technical:** Google **Gemini (gemini-2.5-flash)** with automatic **function-calling** over the *same*
+`core.py` functions (`make_patrol_plan`, `top_hotspots`, `coverage_stats`, `repeat_offenders`). The model
+decides which tool to call, we run the real computation, and it composes the answer — so every number is
+grounded, not generated. It's a true agent, not a chatbot: ask it to deploy teams and it runs the actual
+forecaster + optimiser. It's **multilingual** (English / Hindi / Kannada) and lives both as a full
+**"Ask ParkPulse"** page *and* as a guardrailed **floating assistant on every page**, so help is one tap away
+anywhere in the app.
 
 ---
 
@@ -196,12 +207,14 @@ These are the decisions judges (especially the Flipkart engineers) may probe. Ha
 | **Empirical-Bayes, not deep learning** | 150 days is too little to train a neural net without overfitting, and a black box is **indefensible** for public enforcement. Shrinkage is interpretable, fast, robust on sparse data. |
 | **Transparent, monotone impact score** | A learned/opaque score can't be justified to a citizen or court. Ours can — and its *ranking* is robust to the exact weights. |
 | **Greedy patrol with spacing** | Optimal-enough, instant, and explainable; avoids stacking teams on one arterial. |
-| **Honest time-split backtest (r ≈ 0.69)** | We refuse to report an inflated in-sample number. Train on the past, predict unseen future weeks — the only honest test. |
-| **Streamlit + pydeck** | A *prototype* to prove the intelligence on real data fast, with strong 3-D visuals. The "brain" (`core.py`) is pure Python and decoupled, so production just wraps it in a service — the algorithms don't change. |
+| **Honest time-split backtest (r = 0.70)** | We refuse to report an inflated in-sample number. Train on the past, predict unseen future weeks — the only honest test. A LightGBM Poisson model scored *lower* (0.69), so we kept the interpretable one. |
+| **Streamlit + pydeck** | A *prototype* to prove the intelligence on real data fast, with strong 3-D visuals. The "brain" (`core.py`) is pure Python and decoupled, so production just wraps it in a service — the algorithms don't change. We *proved* this by shipping a second, full-stack build (FastAPI + Next.js / deck.gl) that imports the **same** `core.py`. |
 | **Theme 1 over 2 & 3** | We analysed the data: Theme 2 was too thin to support its own ask; Theme 3 is commoditised. Theme 1 was rich *and* played to our forecasting strength. |
 
 **Architecture in one line:** *"We deliberately separated the brain from the face — all the intelligence lives
-in one pure-Python module we can test on its own, and the web app is just a thin display layer on top."*
+in one pure-Python module we can test on its own, and the web app is just a thin display layer on top."* The
+proof: **two** apps run on it — the Streamlit demo (the submission link) and a finale-grade FastAPI + Next.js /
+deck.gl full-stack build — both importing the **same** `app/core.py`.
 
 ---
 
@@ -215,8 +228,10 @@ One-sentence definitions, so you're never caught flat-footed on a term you used.
 - **Empirical-Bayes shrinkage:** blending a cell's own sparse history with a broader, stabler average, weighted
   by how much data the cell has.
 - **Backtest:** hiding recent data, training on the rest, then grading predictions against the hidden part.
-- **Pearson r:** a 0–1 score of how well predictions track reality (1 = perfect); ours is **~0.69** on unseen weeks.
+- **Pearson r:** a 0–1 score of how well predictions track reality (1 = perfect); ours is **0.70** on unseen weeks.
 - **MAE (mean absolute error):** the average size of the prediction miss (~2 violations per zone-hour cell).
+- **Counterfactual replay:** re-running a ParkPulse plan on days the model never saw, to measure what it *would*
+  have caught — our proof the system works (see §below: a 10-team plan covers ~38% of logged violations).
 - **Observation bias:** the data shows where we *enforce*, not where violations *truly* are.
 - **Greedy allocation:** pick the best option, then the next best that isn't too close, and so on.
 - **Closed loop:** Detect → Score → Forecast → Deploy → Target, feeding back into itself.
@@ -241,12 +256,13 @@ demand — we're making your **existing effort more efficient** (more catches pe
 flagging the blind spots** (93% of enforcement is before 1 PM; evenings are near-zero). A naive solution hides
 this bias; we put it on the front page. Phase 3 closes the loop by fusing live traffic feeds.
 
-**Q: "0.69 correlation isn't very accurate."**
+**Q: "0.70 correlation isn't very accurate."**
 A: Three things. First, it's an **honest** number from a strict time-split — train on the past, predict unseen
-future weeks; many teams would quote an inflated in-sample 0.95. Second, we don't need exact counts — we need
-the **right priority order** to deploy teams, and the plan demonstrably lands on the true hotspots. Third, it
-**improves** with more data and covariates (weather, events). 0.69 on genuinely unseen weeks is a real,
-trustworthy signal.
+future weeks; many teams would quote an inflated in-sample 0.95. (We even tried a LightGBM Poisson model — it
+scored *lower* at 0.69, so we kept the interpretable one.) Second, we don't need exact counts — we need the
+**right priority order** to deploy teams, and the plan demonstrably lands on the true hotspots. Third, it
+**improves** with more data and covariates (weather, events). 0.70 on genuinely unseen weeks is a real,
+trustworthy signal — and our held-out replay below proves it converts into real coverage.
 
 **Q: "Aren't the impact-score weights arbitrary?"**
 A: They're **transparent, traffic-grounded defaults** (a car blocking a main road matters more than one on a
@@ -276,8 +292,11 @@ a neural net would overfit and, more importantly, be unexplainable for public en
 a requirement here, not a nice-to-have.
 
 **Q: "How do you validate it?"**
-A: An honest **time-split backtest** — fit on the first 80% of the calendar, predict the held-out final weeks,
-score predicted vs actual per zone-weekday-hour. r ≈ 0.69, MAE ≈ 2.1. We never test on training data.
+A: Two layers. An honest **time-split backtest** — fit on the first 80% of the calendar, predict the held-out
+final weeks, score predicted vs actual per zone-weekday-hour: **r = 0.70, MAE ≈ 2.0**. (We benchmarked a
+LightGBM Poisson model too — it scored *lower* at 0.69, so we kept the interpretable one.) On top of that, a
+**counterfactual replay on 31 held-out days** the model never saw, where a 10-team plan covers ~38% of the
+violations actually logged. We never test on training data.
 
 **Q: "Privacy — you're tracking vehicles."**
 A: The data is **already anonymised** (plates are tokens like `FKN…`). The repeat-offender module operates on
@@ -303,10 +322,19 @@ forecaster and optimiser on the 298K records. Every number is grounded. The valu
 — a field officer can ask in plain Kannada and get an actionable plan, no dashboard training needed.
 
 ### Impact
+**Q: "How do you know it actually works?"** *(lead with this — it's the proof)*
+A: We ran a **counterfactual replay on 31 held-out days the model never saw**. A 10-team ParkPulse plan would
+have been positioned for **~38% of the violations actually logged on those days**, versus ~1.3% for teams
+spread evenly. Honest framing: that's the share of *catchable/logged* violations (an efficiency number, not
+true demand). Against a plain static hotspot heatmap, day-level capture is roughly tied — but ParkPulse adds
+the **shift-by-shift timing**, a **ready-to-deploy plan**, and the **co-pilot** on top. It lives in
+`core.deployment_simulation()` and surfaces as the validated-impact card on the Coverage & ROI page.
+
 **Q: "What's the measurable benefit?"**
 A: More violations caught per patrol-hour (efficiency), proactive instead of reactive scheduling, data-driven
 prioritisation replacing instinct, a targeted repeat-offender list, and visibility into under-covered
-times/zones. You can measure it directly: catches-per-team-hour and high-impact-zone coverage, before vs after.
+times/zones. You can measure it directly: catches-per-team-hour and high-impact-zone coverage, before vs after —
+and our held-out replay already quantifies it at **~38% coverage** for a 10-team plan.
 
 ---
 
@@ -321,10 +349,18 @@ What to click and the one key line for each page (mirrors `pitch/VIDEO_SCRIPT.md
    we score them by traffic impact, and the ranking updates live."*
 3. **Forecast & Patrol Planner** — set Saturday, 9–1, 8 teams → *"In two seconds: eight deployment points,
    spread across the city, each with its expected catches. Download, brief the teams. Reactive becomes
-   proactive."* Point at the honest **r = 0.69**.
-4. **Repeat-Offender Intelligence** — *"15% of vehicles cause 34% of violations — here's the target list."*
+   proactive."* Point at the honest **r = 0.70**.
+4. **Coverage & ROI** — *"And here's the proof it works: replayed on 31 days the model never saw, a 10-team
+   plan would have been on ~38% of the violations actually logged — versus 1.3% spread evenly."*
+5. **Repeat-Offender Intelligence** — *"15% of vehicles cause 34% of violations — here's the target list."*
+6. **Ask ParkPulse + the floating assistant** — type *"Plan 6 teams for Friday evening around KR Market"* (in
+   English, Hindi or Kannada) → a real plan with a map appears. *"The same co-pilot floats on every page."*
 
 Then close on the Command Center map with the north-star sentence.
+
+> **Mention the full-stack build:** the live link above is the Streamlit demo; there's also a finale-grade
+> **FastAPI + Next.js / deck.gl** version (same `core.py` brain) with the six pages, the floating in-app
+> assistant, and the multilingual co-pilot — proof the intelligence ports cleanly to production.
 
 ---
 
@@ -336,7 +372,8 @@ Keep these on the tip of your tongue:
 - **168** named junctions · **802** neighbourhood zones
 - **15%** of vehicles → **34%** of violations
 - **~93%** of enforcement before 1 PM · **<0.3%** in the 5–9 PM evening peak
-- Forecast accuracy **r ≈ 0.69** (the app shows 0.685), MAE ≈ **2.1**, on **held-out** weeks
+- Forecast accuracy **r = 0.70**, MAE ≈ **2.0**, on **held-out** weeks (a LightGBM Poisson model scored 0.69)
+- Validated impact: a 10-team plan covers **~38%** of violations on **31 held-out days** (vs 1.3% spread evenly)
 - Impact Score **0–100** · severity from **1.0** (main road) to **0.1** (defective plate)
 
 ---
@@ -348,7 +385,8 @@ State these *before* a judge raises them; it signals maturity.
    flagging; Phase-3 fix is live-feed fusion.
 2. **Impact is a proxy** — there's no congestion sensor in the data, so the Impact Score is a transparent,
    defensible *estimate*, not a measurement. *Fix:* validate it against ASTraM speed/flow data.
-3. **Forecast is moderate (r ≈ 0.69)** — honest on a clean split; improves with weather/event covariates.
+3. **Forecast is moderate (r = 0.70)** — honest on a clean split; improves with weather/event covariates. It
+   still converts into real coverage: a held-out replay puts a 10-team plan on ~38% of logged violations.
 4. **Repeat offenders are anonymised tokens** — production links to RTO/ANPR for real notices.
 
 The meta-message: *"We know exactly what this prototype does and doesn't do — and we've designed the next two
@@ -363,12 +401,14 @@ phases to close those gaps."*
   when they'll recur, and exactly how to deploy your teams — plus the chronic repeat offenders. It runs today,
   on data you already have. It turns what already happened into where to stand tomorrow."*
 
-- **2 minutes:** §1 (problem + what it is) → the closed loop (§4, one line each) → the honesty insight (§3) →
-  the patrol planner as the payoff → "feasible today, scales to a live feed." Close on the north-star line.
+- **2 minutes:** §1 (problem + what it is + the **~38% held-out proof**) → the closed loop (§4, one line each) →
+  the honesty insight (§3) → the patrol planner as the payoff → "feasible today, scales to a live feed." Close
+  on the north-star line.
 
-- **5 minutes:** the full §2 story (why Theme 1) → §3 data + the observation-bias insight → live demo of all
-  four pages (§8) → §5 the key technical choices (empirical Bayes, honest backtest, explainable score) → §10
-  limitations + 3-phase rollout → close.
+- **5 minutes:** the full §2 story (why Theme 1) → §3 data + the observation-bias insight → live demo of the six
+  pages (§8) → the **validated-impact card (~38% on 31 held-out days)** → §5 the key technical choices
+  (empirical Bayes, honest backtest r = 0.70, explainable score) → the full-stack build + multilingual co-pilot
+  → §10 limitations + 3-phase rollout → close.
 
 ---
 

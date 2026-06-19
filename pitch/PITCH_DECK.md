@@ -37,9 +37,9 @@ Target length: **11–12 slides, ~2.5–3 min.** Replace `[Team Name]` before pr
 - **Say:** "First we detect — every violation mapped; the worst 1% of locations carry a third of them. But raw counts mislead, so we built a Congestion Impact Score: it weights volume by how badly each violation blocks traffic and whether it's at a junction. One transparent 0-to-100 number to rank every zone."
 
 ## SLIDE 7 — Forecast
-- **On slide:** Predict violations per **zone × weekday × hour.** Empirical-Bayes shrinkage → stable even for sparse cells. **Honest backtest: r ≈ 0.69** on held-out weeks.
+- **On slide:** Predict violations per **zone × weekday × hour.** Empirical-Bayes shrinkage → stable even for sparse cells. **Honest backtest: r ≈ 0.70** on held-out weeks.
 - **Visual:** Forecast/Patrol page screenshot + the "How the forecast works" panel.
-- **Say:** "Then we forecast — expected violations for any zone, any weekday, any hour. Bayesian shrinkage keeps sparse cells stable. And we validate honestly: trained on the first 80% of the calendar, tested on unseen weeks — correlation 0.69. Real signal, not an overfit 0.99."
+- **Say:** "Then we forecast — expected violations for any zone, any weekday, any hour. Bayesian shrinkage keeps sparse cells stable. And we validate honestly: trained on the first 80% of the calendar, tested on unseen weeks — correlation 0.70. Real signal, not an overfit 0.99."
 
 ## SLIDE 8 — Deploy *(the hero slide)*
 - **On slide:** Pick a shift + #teams → an instant, **spatially-spread patrol plan.** Expected catches per team · downloadable CSV. *"Every team starts where congestion will build — before it does."*

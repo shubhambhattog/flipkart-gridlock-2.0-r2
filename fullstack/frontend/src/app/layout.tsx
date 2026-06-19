@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Nav from "@/components/Nav";
+import FloatingChat from "@/components/FloatingChat";
 
 const inter = Inter({ variable: "--font-inter", subsets: ["latin"] });
 
@@ -22,6 +23,7 @@ export default function RootLayout({
           <Nav />
           <main className="flex-1 overflow-y-auto">{children}</main>
         </div>
+        <FloatingChat />
       </body>
     </html>
   );

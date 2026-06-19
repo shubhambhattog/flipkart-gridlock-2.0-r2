@@ -10,7 +10,25 @@ const COLOR_RANGE: [number, number, number][] = [
 ];
 const BASEMAP = "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json";
 
-export default function HotspotMap({ grid }: { grid: GridCell[] }) {
+export default function HotspotMap({
+  grid,
+  zoom = 10.4,
+  pitch = 52,
+  extruded = true,
+  elevationScale = 18,
+  coverage = 0.92,
+  radius = 160,
+  opacity = 1,
+}: {
+  grid: GridCell[];
+  zoom?: number;
+  pitch?: number;
+  extruded?: boolean;
+  elevationScale?: number;
+  coverage?: number;
+  radius?: number;
+  opacity?: number;
+}) {
   const layers = useMemo(
     () => [
       new HexagonLayer<GridCell>({
@@ -21,21 +39,22 @@ export default function HotspotMap({ grid }: { grid: GridCell[] }) {
         getColorWeight: (d) => d.n,
         elevationAggregation: "SUM",
         colorAggregation: "SUM",
-        radius: 160,
-        elevationScale: 18,
+        radius,
+        elevationScale,
         elevationRange: [0, 2400],
-        extruded: true,
-        coverage: 0.92,
+        extruded,
+        coverage,
+        opacity,
         pickable: true,
         colorRange: COLOR_RANGE,
       }),
     ],
-    [grid],
+    [grid, extruded, elevationScale, coverage, radius, opacity],
   );
 
   return (
     <DeckGL
-      initialViewState={{ longitude: 77.5946, latitude: 12.9716, zoom: 10.4, pitch: 52, bearing: 0 }}
+      initialViewState={{ longitude: 77.5946, latitude: 12.9716, zoom, pitch, bearing: 0 }}
       controller
       layers={layers}
       style={{ position: "absolute", inset: "0" }}

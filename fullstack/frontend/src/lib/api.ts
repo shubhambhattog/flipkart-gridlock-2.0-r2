@@ -65,6 +65,7 @@ export const api = {
         `&types=${encodeURIComponent(p.types.join("|"))}&stations=${encodeURIComponent(p.stations.join("|"))}`),
   patrol: (b: PatrolReq) => post<PatrolResp>("/patrol", b),
   copilot: (message: string) => post<{ answer: string; plan: Deployment[] | null }>("/copilot", { message }),
+  assistant: (message: string) => post<{ answer: string; plan: Deployment[] | null }>("/assistant", { message }),
 };
 
 // blue → amber → red ramp for an impact score (0–100)

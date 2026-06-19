@@ -167,6 +167,19 @@ def copilot_endpoint(req: CopilotReq):
         return {"answer": f"⚠️ {type(e).__name__}: {e}", "plan": None}
     return {"answer": answer, "plan": _records(plan) if plan is not None and len(plan) else None}
 
+@app.post("/assistant")
+def assistant_endpoint(req: CopilotReq):
+    if STATE.get("genai") is None:
+        return {"answer": "The in-app assistant needs GEMINI_API_KEY set on the server. "
+                          "Meanwhile, use the page shortcuts below to get around.", "plan": None}
+    ctx = {"df": STATE["df"], "zones": STATE["zones"], "fc": STATE["fc"]}
+    model = os.environ.get("COPILOT_MODEL", "gemini-2.5-flash")
+    try:
+        answer, plan = copilot.run_assistant(STATE["genai"], req.message, ctx, model=model)
+    except Exception as e:
+        return {"answer": f"⚠️ {type(e).__name__}: {e}", "plan": None}
+    return {"answer": answer, "plan": _records(plan) if plan is not None and len(plan) else None}
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=int(os.environ.get("PORT", 8000)))

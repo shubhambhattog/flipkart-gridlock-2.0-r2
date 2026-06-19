@@ -33,12 +33,21 @@ export default function Home() {
       <section className="relative h-[62vh] min-h-[420px] w-full overflow-hidden">
         {grid && <HotspotMap grid={grid} />}
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-background/85 via-transparent to-background" />
+        {/* soft dark blurred scrim behind the headline → readable over the map */}
+        <div
+          className="pointer-events-none absolute bottom-10 left-0 h-80 w-[720px] max-w-full"
+          style={{
+            background:
+              "radial-gradient(closest-side at 26% 52%, rgba(0,0,0,0.92), rgba(0,0,0,0.6) 42%, rgba(0,0,0,0) 72%)",
+            filter: "blur(14px)",
+          }}
+        />
         <div className="pointer-events-none absolute bottom-28 left-8 max-w-2xl">
-          <h1 className="text-4xl font-bold leading-[1.15]">
+          <h1 className="text-4xl font-bold leading-[1.15]" style={{ textShadow: "0 2px 26px rgba(0,0,0,0.9)" }}>
             Turning <span className="text-[var(--primary)]">298,000</span> parking tickets into{" "}
             <span className="text-[var(--primary)]">where to stand tomorrow.</span>
           </h1>
-          <p className="mt-3 text-[var(--muted-foreground)]">
+          <p className="mt-3 text-foreground/80" style={{ textShadow: "0 1px 16px rgba(0,0,0,0.9)" }}>
             Detect → Score → Forecast → Deploy → Target. Drag the map to explore violation density.
           </p>
         </div>

@@ -128,7 +128,7 @@ export default function ForecastPage() {
               <Label>Teams</Label>
               <span className="text-sm font-semibold tabular-nums text-primary">{teams}</span>
             </div>
-            <Slider min={3} max={20} step={1} value={[teams]}
+            <Slider min={1} max={20} step={1} value={[teams]}
               onValueChange={(v) => setTeams(Array.isArray(v) ? v[0] : v)} className="py-2.5" />
           </div>
           <div className="space-y-1.5">

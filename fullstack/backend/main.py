@@ -8,6 +8,13 @@ Run locally:  python fullstack/backend/main.py     (serves on :8000)
 import os, sys, json
 from pathlib import Path
 from contextlib import asynccontextmanager
+from datetime import datetime, timezone, timedelta
+
+_IST = timezone(timedelta(hours=5, minutes=30))
+
+def _now_ist() -> str:
+    """Current Bengaluru wall-clock time, so the co-pilot greets by the real time of day."""
+    return datetime.now(_IST).strftime("%A %d %B %Y, %H:%M IST")
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -160,8 +167,13 @@ def patrol(req: PatrolReq):
     return {"weekday": copilot.DOW[dow], "window": f"{h0:02d}:00-{h1:02d}:59",
             "teams": int(len(plan)), "plan": _records(plan)}
 
+class Turn(BaseModel):
+    role: str = "user"          # "user" | "assistant"
+    text: str = ""
+
 class CopilotReq(BaseModel):
     message: str
+    history: list[Turn] = []     # prior turns, for conversation memory
 
 @app.post("/copilot")
 def copilot_endpoint(req: CopilotReq):
@@ -169,8 +181,10 @@ def copilot_endpoint(req: CopilotReq):
         return {"answer": "⚠️ Co-pilot isn't configured — set GEMINI_API_KEY on the server.", "plan": None}
     ctx = {"df": STATE["df"], "zones": STATE["zones"], "fc": STATE["fc"]}
     model = os.environ.get("COPILOT_MODEL", "gemini-2.5-flash")
+    history = [t.model_dump() for t in req.history]
     try:
-        answer, plan = copilot.run_agent(STATE["genai"], req.message, ctx, model=model)
+        answer, plan = copilot.run_agent(STATE["genai"], req.message, ctx, model=model,
+                                         history=history, now=_now_ist())
     except Exception as e:
         return {"answer": f"⚠️ {type(e).__name__}: {e}", "plan": None}
     return {"answer": answer, "plan": _records(plan) if plan is not None and len(plan) else None}
@@ -182,8 +196,10 @@ def assistant_endpoint(req: CopilotReq):
                           "Meanwhile, use the page shortcuts below to get around.", "plan": None}
     ctx = {"df": STATE["df"], "zones": STATE["zones"], "fc": STATE["fc"]}
     model = os.environ.get("COPILOT_MODEL", "gemini-2.5-flash")
+    history = [t.model_dump() for t in req.history]
     try:
-        answer, plan = copilot.run_assistant(STATE["genai"], req.message, ctx, model=model)
+        answer, plan = copilot.run_assistant(STATE["genai"], req.message, ctx, model=model,
+                                             history=history, now=_now_ist())
     except Exception as e:
         return {"answer": f"⚠️ {type(e).__name__}: {e}", "plan": None}
     return {"answer": answer, "plan": _records(plan) if plan is not None and len(plan) else None}

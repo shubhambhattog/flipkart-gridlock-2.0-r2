@@ -183,7 +183,7 @@ export default function CoveragePage() {
                 <Label className="text-[11px] text-muted-foreground">Teams</Label>
                 <span className="text-xs font-semibold tabular-nums">{teams}</span>
               </div>
-              <Slider min={3} max={20} step={1} value={[teams]} onValueChange={(v) => setTeams(Array.isArray(v) ? v[0] : v)} className="py-2" />
+              <Slider min={1} max={20} step={1} value={[teams]} onValueChange={(v) => setTeams(Array.isArray(v) ? v[0] : v)} className="py-2" />
             </div>
           </div>
         </div>

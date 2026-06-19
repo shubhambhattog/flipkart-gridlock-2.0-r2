@@ -1,9 +1,9 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
-import { Bot, Send } from "lucide-react";
-import { api, type Deployment } from "@/lib/api";
-import { Spinner } from "@/components/ui";
+import { Bot, Send, Mic, Plus } from "lucide-react";
+import { api, type Deployment, type ChatTurn } from "@/lib/api";
+import { ThinkingDots } from "@/components/ui";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -43,21 +43,34 @@ export default function AskPage() {
   const [messages, setMessages] = useState<Msg[]>([GREETING]);
   const [input, setInput] = useState("");
   const [thinking, setThinking] = useState(false);
+  const [listening, setListening] = useState(false);
+  const [voiceSupported, setVoiceSupported] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const recognitionRef = useRef<any>(null);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, thinking]);
 
+  useEffect(() => {
+    const SR =
+      typeof window !== "undefined" &&
+      ((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition);
+    setVoiceSupported(!!SR);
+    return () => recognitionRef.current?.stop?.();
+  }, []);
+
   async function send(raw: string) {
     const message = raw.trim();
     if (!message || thinking) return;
+    // everything after the canned greeting is real conversation context
+    const history: ChatTurn[] = messages.slice(1).map((m) => ({ role: m.role, text: m.text }));
     setMessages((m) => [...m, { role: "user", text: message }]);
     setInput("");
     setThinking(true);
     try {
-      const resp = await api.copilot(message);
+      const resp = await api.copilot(message, history);
       setMessages((m) => [...m, { role: "assistant", text: resp.answer, plan: resp.plan }]);
     } catch {
       setMessages((m) => [...m, {
@@ -68,6 +81,35 @@ export default function AskPage() {
     } finally {
       setThinking(false);
     }
+  }
+
+  function newChat() {
+    recognitionRef.current?.stop?.();
+    setListening(false);
+    setMessages([GREETING]);
+    setInput("");
+    setThinking(false);
+    inputRef.current?.focus();
+  }
+
+  function toggleVoice() {
+    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SR) return;
+    if (listening) {
+      recognitionRef.current?.stop?.();
+      return;
+    }
+    const rec = new SR();
+    rec.lang = "en-IN";
+    rec.interimResults = true;
+    rec.continuous = false;
+    rec.onresult = (e: any) =>
+      setInput(Array.from(e.results).map((r: any) => r[0].transcript).join(""));
+    rec.onerror = () => setListening(false);
+    rec.onend = () => setListening(false);
+    recognitionRef.current = rec;
+    setListening(true);
+    try { rec.start(); } catch { setListening(false); }
   }
 
   function fillExample(text: string) {
@@ -81,12 +123,15 @@ export default function AskPage() {
         <div className="grid h-9 w-9 place-items-center rounded-lg bg-primary/15 text-primary">
           <Bot className="h-5 w-5" />
         </div>
-        <div>
+        <div className="flex-1">
           <h1 className="text-2xl font-bold leading-tight">Ask ParkPulse</h1>
           <p className="text-sm text-muted-foreground">
             Your AI co-pilot — ask in plain English, Hindi or Kannada.
           </p>
         </div>
+        <Button variant="outline" size="sm" onClick={newChat} disabled={messages.length <= 1 && !thinking}>
+          <Plus /> New chat
+        </Button>
       </header>
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-6 py-6">
@@ -160,8 +205,8 @@ export default function AskPage() {
           {thinking && (
             <div className="flex items-center gap-3">
               <BotAvatar />
-              <div className="rounded-xl border border-border bg-card px-2 py-1">
-                <Spinner label="thinking…" />
+              <div className="rounded-xl border border-border bg-card px-3 py-2.5">
+                <ThinkingDots />
               </div>
             </div>
           )}
@@ -184,7 +229,14 @@ export default function AskPage() {
           </div>
           <form onSubmit={(e) => { e.preventDefault(); send(input); }} className="flex items-center gap-2">
             <Input ref={inputRef} value={input} onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask in plain English, Hindi or Kannada…" className="flex-1" />
+              placeholder={listening ? "Listening…" : "Ask in plain English, Hindi or Kannada…"} className="flex-1" />
+            {voiceSupported && (
+              <Button type="button" onClick={toggleVoice} size="icon"
+                variant={listening ? "default" : "outline"} className={listening ? "animate-pulse" : ""}
+                aria-label={listening ? "Stop voice input" : "Voice input"} title="Voice input">
+                <Mic />
+              </Button>
+            )}
             <Button type="submit" disabled={thinking || !input.trim()} size="icon" aria-label="Send">
               <Send />
             </Button>

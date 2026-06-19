@@ -1,8 +1,9 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Bot, X, Send, ArrowUpRight, Sparkles } from "lucide-react";
-import { api, type Deployment } from "@/lib/api";
+import { Bot, X, Send, ArrowUpRight, Sparkles, RotateCcw } from "lucide-react";
+import { api, type Deployment, type ChatTurn } from "@/lib/api";
+import { ThinkingDots } from "@/components/ui";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
@@ -40,11 +41,12 @@ export default function FloatingChat() {
   async function send(raw: string) {
     const message = raw.trim();
     if (!message || thinking) return;
+    const history: ChatTurn[] = messages.slice(1).map((m) => ({ role: m.role, text: m.text }));
     setMessages((m) => [...m, { role: "user", text: message }]);
     setInput("");
     setThinking(true);
     try {
-      const resp = await api.assistant(message);
+      const resp = await api.assistant(message, history);
       setMessages((m) => [...m, { role: "assistant", text: resp.answer, plan: resp.plan }]);
     } catch {
       setMessages((m) => [
@@ -54,6 +56,13 @@ export default function FloatingChat() {
     } finally {
       setThinking(false);
     }
+  }
+
+  function newChat() {
+    setMessages([GREETING]);
+    setInput("");
+    setThinking(false);
+    inputRef.current?.focus();
   }
 
   return (
@@ -76,6 +85,9 @@ export default function FloatingChat() {
               <div className="text-sm font-semibold leading-tight">ParkPulse Assistant</div>
               <div className="text-[11px] text-muted-foreground">Navigation + help · guardrailed</div>
             </div>
+            <button onClick={newChat} aria-label="New chat" title="New chat" className="text-muted-foreground hover:text-foreground">
+              <RotateCcw className="h-4 w-4" />
+            </button>
             <button onClick={() => setOpen(false)} aria-label="Close" className="text-muted-foreground hover:text-foreground">
               <X className="h-4 w-4" />
             </button>
@@ -124,7 +136,7 @@ export default function FloatingChat() {
                 </div>
               ),
             )}
-            {thinking && <div className="px-1 text-xs text-muted-foreground">thinking…</div>}
+            {thinking && <div className="px-1"><ThinkingDots /></div>}
           </div>
 
           <form onSubmit={(e) => { e.preventDefault(); send(input); }} className="flex items-center gap-2 border-t border-border p-3">

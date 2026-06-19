@@ -57,6 +57,24 @@ export function Spinner({ label = "Loading…" }: { label?: string }) {
   return <div className="grid place-items-center py-24 text-sm text-muted-foreground">{label}</div>;
 }
 
+/** Three jumping dots + a "(thinking)" label — the assistant's typing indicator. */
+export function ThinkingDots({ label = "thinking" }: { label?: string }) {
+  return (
+    <div className="flex items-center gap-2 text-muted-foreground">
+      <span className="flex items-end gap-1">
+        {[0, 150, 300].map((d) => (
+          <span
+            key={d}
+            className="inline-block h-1.5 w-1.5 animate-bounce rounded-full bg-current"
+            style={{ animationDelay: `${d}ms` }}
+          />
+        ))}
+      </span>
+      <span className="text-xs">({label})</span>
+    </div>
+  );
+}
+
 export function Pill({ children }: { children: ReactNode }) {
   return (
     <span className="rounded-full border border-border bg-secondary/60 px-2.5 py-1 text-xs text-muted-foreground">

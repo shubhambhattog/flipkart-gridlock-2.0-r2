@@ -49,6 +49,8 @@ export type ImpactSim = {
   test_days: number;
   curve: { teams: number; parkpulse: number; static: number; even: number }[];
 };
+export type ChatTurn = { role: "user" | "assistant"; text: string };
+export type CopilotResp = { answer: string; plan: Deployment[] | null };
 
 export const DOW = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
@@ -70,8 +72,8 @@ export const api = {
       `/explorer?dows=${p.dows.join(",")}&h0=${p.h0}&h1=${p.h1}` +
         `&types=${encodeURIComponent(p.types.join("|"))}&stations=${encodeURIComponent(p.stations.join("|"))}`),
   patrol: (b: PatrolReq) => post<PatrolResp>("/patrol", b),
-  copilot: (message: string) => post<{ answer: string; plan: Deployment[] | null }>("/copilot", { message }),
-  assistant: (message: string) => post<{ answer: string; plan: Deployment[] | null }>("/assistant", { message }),
+  copilot: (message: string, history: ChatTurn[] = []) => post<CopilotResp>("/copilot", { message, history }),
+  assistant: (message: string, history: ChatTurn[] = []) => post<CopilotResp>("/assistant", { message, history }),
 };
 
 // blue → amber → red ramp for an impact score (0–100)

@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Mail, TrendingUp, Truck } from "lucide-react";
 import { api, type Meta, type Offender } from "@/lib/api";
 import { Card, Kpi, Bars, Spinner } from "@/components/ui";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 
@@ -18,6 +18,32 @@ export default function OffendersPage() {
   }, []);
 
   const fmt = (n: number) => n.toLocaleString("en-IN");
+
+  // recommended enforcement action per vehicle, by how often it's been caught
+  const actionFor = (n: number) => (n >= 10 ? "Tow priority" : n >= 5 ? "Escalated penalty" : "Owner notice");
+
+  function exportOffenders(kind: "all" | "escalated" | "tow") {
+    if (!offenders) return;
+    const ranked = offenders.map((o, i) => ({ ...o, rank: i + 1 }));
+    const rows =
+      kind === "tow" ? ranked.slice(0, 10)
+      : kind === "escalated" ? ranked.filter((o) => o.violations >= 5)
+      : ranked;
+    if (rows.length === 0) return;
+    const head = ["rank", "vehicle", "times_caught", "recommended_action"];
+    const body = rows.map((o) =>
+      [o.rank, o.vehicle, o.violations, actionFor(o.violations)]
+        .map((v) => { const s = String(v); return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; })
+        .join(","));
+    const csv = [head.join(","), ...body].join("\n");
+    const name = kind === "tow" ? "tow-priority" : kind === "escalated" ? "escalated-penalty" : "owner-notice-batch";
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = `parkpulse-${name}.csv`;
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+  }
 
   if (err)
     return (
@@ -114,11 +140,20 @@ export default function OffendersPage() {
                   <span className="text-foreground">tow priority</span>. Acting on the top of this list removes
                   the most persistent congestion sources first.
                 </p>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  <Badge variant="secondary" className="gap-1"><Mail className="h-3 w-3" /> owner notice</Badge>
-                  <Badge variant="secondary" className="gap-1"><TrendingUp className="h-3 w-3" /> escalated penalty</Badge>
-                  <Badge variant="secondary" className="gap-1"><Truck className="h-3 w-3" /> tow priority</Badge>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <Button variant="outline" size="sm" className="gap-1.5" onClick={() => exportOffenders("all")}>
+                    <Mail className="h-3.5 w-3.5" /> Owner-notice batch
+                  </Button>
+                  <Button variant="outline" size="sm" className="gap-1.5" onClick={() => exportOffenders("escalated")}>
+                    <TrendingUp className="h-3.5 w-3.5" /> Escalated (≥5)
+                  </Button>
+                  <Button variant="outline" size="sm" className="gap-1.5" onClick={() => exportOffenders("tow")}>
+                    <Truck className="h-3.5 w-3.5" /> Tow priority (top 10)
+                  </Button>
                 </div>
+                <p className="mt-2 text-[11px] text-muted-foreground">
+                  Each downloads a CSV target list — rank · vehicle · times caught · recommended action.
+                </p>
               </Card>
             </div>
           </div>

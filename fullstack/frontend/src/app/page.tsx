@@ -33,6 +33,30 @@ export default function Home() {
       <section className="relative h-[62vh] min-h-[420px] w-full overflow-hidden">
         {grid && <HotspotMap grid={grid} />}
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-background/85 via-transparent to-background" />
+
+        {/* map legend — what the colours and hexagon heights mean (for a first-time viewer) */}
+        <div className="glass pointer-events-none absolute right-4 top-4 w-52 rounded-xl px-4 py-3">
+          <div className="text-xs font-semibold">Parking-violation density</div>
+          <div
+            className="mt-2 h-2.5 w-full rounded-full"
+            style={{
+              background:
+                "linear-gradient(to right, rgb(46,134,222), rgb(92,160,180), rgb(245,205,90), rgb(245,158,65), rgb(238,110,55), rgb(226,53,43))",
+            }}
+          />
+          <div className="mt-1 flex justify-between text-[10px] text-foreground/70">
+            <span>Low</span>
+            <span>High</span>
+          </div>
+          <div className="mt-2.5 flex items-center gap-2 text-[10px] text-foreground/70">
+            <span className="flex items-end gap-0.5">
+              <span className="inline-block w-1.5 rounded-sm bg-foreground/40" style={{ height: 6 }} />
+              <span className="inline-block w-1.5 rounded-sm bg-foreground/60" style={{ height: 11 }} />
+              <span className="inline-block w-1.5 rounded-sm bg-foreground/80" style={{ height: 16 }} />
+            </span>
+            Taller hexagon = more violations
+          </div>
+        </div>
         {/* soft dark blurred scrim behind the headline → readable over the map */}
         <div
           className="pointer-events-none absolute bottom-10 left-0 h-80 w-[720px] max-w-full"

@@ -12,6 +12,9 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from dotenv import load_dotenv
+
+load_dotenv(Path(__file__).resolve().parent / ".env")  # optional: fullstack/backend/.env (git-ignored)
 
 # --- import the shared brain from the repo's app/ (single source of truth) ---
 APP_DIR = Path(__file__).resolve().parents[2] / "app"

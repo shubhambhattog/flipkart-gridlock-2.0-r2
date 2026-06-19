@@ -38,17 +38,21 @@ export default function ZoneMap({
       getLineColor: [255, 255, 255, 50],
       lineWidthMinPixels: 0.5,
       pickable: true,
+      // disable depth test so overlapping flat circles blend in draw order (no z-fighting / flicker on pan)
+      parameters: { depthCompare: "always" as const },
     });
     const planLayers = plan.length
       ? [
           new ScatterplotLayer<Deployment>({
             id: "halo", data: plan, getPosition: (d) => [d.lon, d.lat],
             getRadius: 420, getFillColor: [76, 139, 245, 55],
+            parameters: { depthCompare: "always" as const },
           }),
           new ScatterplotLayer<Deployment>({
             id: "pin", data: plan, getPosition: (d) => [d.lon, d.lat],
             getRadius: 120, getFillColor: [76, 139, 245], stroked: true,
             getLineColor: [255, 255, 255], lineWidthMinPixels: 2, pickable: true,
+            parameters: { depthCompare: "always" as const },
           }),
           new TextLayer<Deployment>({
             id: "tlabel", data: plan, getPosition: (d) => [d.lon, d.lat],

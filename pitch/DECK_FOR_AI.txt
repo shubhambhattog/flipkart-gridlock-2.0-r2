@@ -1,0 +1,219 @@
+==============================================================================
+PARKPULSE — PITCH DECK CONTENT (10 slides, plain text)
+For: Gridlock Hackathon 2.0 · Theme 1 — Poor Visibility on Parking-Induced
+Congestion · Bengaluru Traffic Police (judged by BTP + Flipkart).
+==============================================================================
+
+HOW TO USE THIS FILE
+- Paste everything below into an AI presentation generator (Gamma, Tome,
+  Beautiful.ai, etc.). It is structured as exactly 10 slides.
+- One slide per "SLIDE N" block. Use the HEADLINE as the slide title/takeaway
+  and the bullets as the body. Keep bullets concise on the slide.
+- VISUAL lines tell you what image/diagram to place. Diagrams are already
+  exported as PNGs in pitch/diagrams/ (see DIAGRAM INDEX at the bottom) —
+  add them manually after the AI builds the layout.
+
+DESIGN NOTES (tell the AI tool)
+- Tone: professional, confident, credible to government + corporate judges.
+- Theme: LIGHT background, navy / signal-blue accent. Clean, minimal, readable
+  fonts. No clutter, no animations. (Diagrams are provided as light-theme PNGs.)
+- This deck is READ by judges and an AI screener (not narrated) — every slide
+  must stand on its own.
+
+NUMBERS THAT MUST STAY EXACT (do not round or alter)
+- 298,445 violation records · 151 days · 802 zones · 0 missing fields
+- Forecast: r = 0.70, MAE 2.01 (honest held-out backtest)
+- Proven impact: 38% vs 1.3% on 31 held-out days (10 teams)
+- Concentration: top 1% of locations = 33% of violations
+- Repeat offenders: 15% of vehicles = 34% of violations
+- Enforcement timing: 93% before 1 PM; <0.3% in the 5–9 PM peak
+
+==============================================================================
+SLIDE 1 — TITLE / CONTEXT & SCOPE
+==============================================================================
+HEADLINE: ParkPulse — turning 298,000 parking tickets into where to stand tomorrow.
+
+- Scope: illegal on-street parking near markets, metro stations and commercial
+  hubs in Bengaluru — vehicles parked in live lanes and at junctions, the city's
+  most visible, most-complained congestion source.
+- Goal: give the Bengaluru Traffic Police a data-driven enforcement system —
+  built entirely on their own challan records — that says WHICH parking hurts
+  traffic, WHEN it recurs, and WHERE to send scarce teams.
+- Theme 1 · Gridlock Hackathon 2.0 · TeamX
+
+VISUAL: product title over the Command Center 3-D hotspot map (dark, blue accent).
+
+==============================================================================
+SLIDE 2 — THE PROBLEM
+==============================================================================
+HEADLINE: Today, parking enforcement flies blind.
+
+- A duty officer has a handful of teams and a whole division, and decides where
+  to send them on instinct — there is no city-wide picture of where parking
+  actually blocks traffic, or when.
+- Why existing methods fall short: manual patrols don't scale or prioritize;
+  ANPR/traffic cameras are capital-heavy, slow to procure, and don't tell you
+  where to deploy people tomorrow; static "known hotspot" lists ignore WHEN
+  violations happen and go stale fast.
+- The data to fix this already exists (challan records) but sits unused — no
+  heatmap, no ranking, no schedule.
+
+VISUAL: a choked Bengaluru junction beside a blank/empty map (the "blindness").
+
+==============================================================================
+SLIDE 3 — ANALYSIS, PART 1: THE "WHY"
+==============================================================================
+HEADLINE: The problem is real — and extremely concentrated.
+
+- Built on 298,445 real BTP violation records · 151 days · 802 geohash zones ·
+  zero missing fields. Their own data, cleaned — nothing invented.
+- Root cause is spatial concentration: the top 1% of locations hold 33% of all
+  violations — a handful of junctions, markets and metro mouths.
+- Plus a chronic-offender tail: 15% of vehicles cause 34% of violations.
+- That concentration is the opportunity: a few well-placed teams can cover a
+  disproportionate share of the problem.
+
+VISUAL: three stat tiles (298,445 / 1%→33% / 15%→34%) + a Pareto curve.
+
+==============================================================================
+SLIDE 4 — ANALYSIS, PART 2: IMPACT (READ HONESTLY)
+==============================================================================
+HEADLINE: It hits commuters, business and delivery — and we name the data's gap.
+
+- Illegal parking in live lanes and at junctions slows commuters, blocks bus
+  stops and main roads, and chokes last-mile delivery access around exactly the
+  commercial hubs that depend on it.
+- The honest insight (this earns trust): this is ENFORCEMENT data, not demand —
+  it shows where officers CAUGHT parking. It's morning-heavy: ~93% of tickets
+  are written before 1 PM; <0.3% land in the 5–9 PM evening peak.
+- So we make two honest claims, never one inflated one: (1) optimize the effort
+  already spent, and (2) flag the evening blind spot — instead of pretending to
+  predict the whole city.
+
+VISUAL: coverage-by-hour bar chart with the 5–9 PM hours highlighted in red
+(screenshot from the app's Coverage page).
+
+==============================================================================
+SLIDE 5 — THE SOLUTION: A CLOSED DECISION LOOP
+==============================================================================
+HEADLINE: Not a dashboard — a closed decision loop that ends in an action.
+
+- Detect → Score → Forecast → Deploy → Target → (outcomes feed back). It ends in
+  a plan a supervisor briefs at tomorrow's roll-call, not a chart to stare at.
+- Core mechanics (transparent, no black box):
+  - Congestion Impact Score (0–100) = violations × avg severity × flow-criticality
+    (junction / main-road weight).
+  - Forecaster: empirical-Bayes shrinkage of violations per zone × weekday × hour
+    (sparse cells stay stable).
+  - Optimizer: greedy maximum-coverage with a ≥600 m spacing constraint (no
+    stacking teams on one street).
+- Every stage is explainable — anyone (officer or judge) can see why a number is
+  what it is.
+
+VISUAL: >> ADD DIAGRAM: pitch/diagrams/parkpulse_decision_loop_light.png (the 5-stage loop).
+   Optional inset: pitch/diagrams/parkpulse_impact_score_light.png (how the Impact Score is computed).
+
+==============================================================================
+SLIDE 6 — ARCHITECTURE & TECH STACK
+==============================================================================
+HEADLINE: Two front-ends, one brain — small, fast, auditable, no GPU.
+
+- One engine (core.py, pure pandas/numpy): the impact score, the EB-shrinkage
+  forecaster, the spaced greedy optimizer, an honest time-split backtest, and a
+  counterfactual deployment simulator.
+- Two apps share that brain: a live Streamlit demo, and a full-stack product —
+  FastAPI API (Render) + Next.js 16 / React 19 / deck.gl UI (Vercel).
+- AI co-pilot: Google Gemini automatic function-calling runs the real tools
+  server-side (the key never leaves the server).
+- No GPU, no training pipeline, no IoT hardware — the whole model rebuilds in
+  seconds.
+
+VISUAL: >> ADD DIAGRAM: pitch/diagrams/parkpulse_architecture_light.png (data flow).
+
+==============================================================================
+SLIDE 7 — IMPLEMENTATION & KEY FEATURES
+==============================================================================
+HEADLINE: How it's executed — and what sets it apart.
+
+- The deliverable: pick a weekday + shift + team count → a spaced patrol plan,
+  shared by WhatsApp / print / CSV at roll-call. One click, no training.
+- Auditable BOTH ways: tap a team for WHY it's placed (forecast load, junction/
+  main-road impact, 3-week trend); an "Also considered" panel shows WHY a strong
+  zone ISN'T there ("add 1 team to include" vs "skipped to avoid stacking within
+  600 m"). Transparent, not a black box.
+- Full-day planner plans all three shifts at once, finds the evening blind spot
+  (derived from the data, e.g. 361 → 36 → 2 catches), and nudges reallocation
+  into the gap.
+- Ask ParkPulse co-pilot: ask or SPEAK in English / Hindi / Kannada, with
+  conversation memory — "Plan 6 teams for Friday evening near KR Market."
+- Target chronic offenders (15% → 34%) with ready owner-notice / tow-priority CSVs.
+
+VISUAL: screenshot strip — patrol plan → "why here" + "Also considered" →
+WhatsApp/CSV → co-pilot → full-day blind spot.
+
+==============================================================================
+SLIDE 8 — VALIDATION & PROVEN IMPACT  (the strongest slide)
+==============================================================================
+HEADLINE: 38% of real violations covered — tested on 31 days the model never saw.
+
+- Forecast validated the hard way: trained on early weeks, scored on weeks it
+  never saw → r = 0.70, MAE 2.01 (real signal, not an overfit 0.99).
+- We benchmarked a LightGBM model — it scored LOWER (0.69) and wasn't
+  explainable, so we kept the interpretable one.
+- Counterfactual proof: we replayed a 10-team plan across 31 held-out days.
+  Those teams would have been sitting on ~38% of the violations actually logged
+  — vs ~1.3% spread evenly (and well above a static "usual hotspots" plan).
+- A validated efficiency gain on UNSEEN data, not a projection — most teams have
+  zero validation.
+
+VISUAL: bar chart — ParkPulse 38% vs Even spread 1.3% (add Static plan if you
+have it). Or screenshot the app's Coverage & ROI "Proven impact" card.
+
+==============================================================================
+SLIDE 9 — FEASIBILITY, ROLLOUT & INTEGRITY
+==============================================================================
+HEADLINE: Deployable today, on data BTP already collects — fixed dataset untouched.
+
+- Feasible now: runs on a laptop, uses only existing challan data, no new sensors
+  or procurement. Live as a web app today; full-stack product is deployment-ready.
+- Self-improving by design: a live ingest endpoint cleans new challans and
+  rebuilds the models in seconds (in-memory); outcome logging lets officers
+  record what a team found, closing the loop.
+- Generalizes: the geohash engine works for any city or violation type — not
+  parking-specific.
+- Integrity (stated plainly): we NEVER modify the fixed competition dataset —
+  ingest is in-memory only and shown as architecture for live data; outcome logs
+  are in-memory. The official 298,445 records are untouched.
+
+VISUAL: >> ADD DIAGRAM: pitch/diagrams/parkpulse_rollout_light.png
+(① Retrospective → ② Nightly feed + evening pilots → ③ Live ASTraM feed).
+
+==============================================================================
+SLIDE 10 — SUPPORTING LINKS, RUN INSTRUCTIONS & CLOSE
+==============================================================================
+HEADLINE: Everything to verify it runs — and the one-line vision.
+
+- Live demo (Streamlit): https://flipkart-gridlock-20-r2-rinxb9yibzp8knp6quhfew.streamlit.app
+- Full-stack web app: [Vercel URL]   ·   API health: [Render URL]/health
+- Code repository: [GitHub repo URL]   ·   Demo video: [link — ~3–5 min walkthrough]
+- Run locally: python fullstack/backend/main.py  ·  cd fullstack/frontend && npm install && npm run dev
+- Team: TeamX — Shubham, Satyam, Palash
+- Close: ParkPulse turns what already happened into where to stand tomorrow —
+  feasible, honest, and proven on unseen data.
+
+VISUAL: title card + links as scannable QR codes.
+
+==============================================================================
+DIAGRAM INDEX (PNGs already made — add manually to the matching slide)
+==============================================================================
+- Slide 5 → parkpulse_decision_loop_light.png   (5-stage decision loop)
+- Slide 5 → parkpulse_impact_score_light.png    (optional inset: Impact Score formula)
+- Slide 6 → parkpulse_architecture_light.png    (architecture & data flow)
+- Slide 9 → parkpulse_rollout_light.png         (rollout roadmap ①②③)
+All in pitch/diagrams/ (light theme). Dark-theme versions exist too (same names without
+"_light"). Editable source (Eraser): https://app.eraser.io/workspace/OJhuyrsjNunFXnNU4c5j
+
+Charts to make yourself (not diagrams):
+- Slide 4 → coverage-by-hour bars (screenshot the app's Coverage page).
+- Slide 8 → 38% vs 1.3% bar chart (or screenshot the Coverage & ROI "Proven impact" card).
+==============================================================================

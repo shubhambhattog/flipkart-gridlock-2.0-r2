@@ -198,22 +198,22 @@ def refresh():
 
 class IngestReq(BaseModel):
     records: list[dict]          # RAW rows: latitude, longitude, created_datetime, violation_type, ...
-    persist: bool = True         # also write to clean.pkl so they survive a restart
 
 @app.post("/ingest")
 def ingest(req: IngestReq):
-    """Append new RAW violation records (source-CSV schema), clean them like prep.py, rebuild the models,
-       and optionally persist to clean.pkl. Makes the 'gets better over time' story literally true."""
+    """Append new RAW violation records (source-CSV schema), clean them like prep.py, and rebuild the models
+       IN MEMORY ONLY. INTEGRITY: we NEVER write the fixed competition dataset (data/clean.pkl) — the append
+       lives only until restart. This demonstrates the nightly-feed architecture without ever mutating the
+       official 298,445 records on disk."""
     cleaned = core.clean_raw(req.records)
     if cleaned.empty:
         return {"status": "no_valid_records", "added": 0, "violations": int(len(STATE["df"]))}
     import pandas as pd
     df = pd.concat([STATE["df"], cleaned], ignore_index=True)
-    if req.persist:
-        df.to_pickle(DATA_DIR / "clean.pkl")
-    _build_state(df)
-    return {"status": "ingested", "added": int(len(cleaned)),
-            "violations": int(len(STATE["df"])), "backtest": STATE["meta"]["backtest"]}
+    _build_state(df)             # in-memory only; clean.pkl on disk is never touched
+    return {"status": "ingested_in_memory", "added": int(len(cleaned)),
+            "violations": int(len(STATE["df"])), "backtest": STATE["meta"]["backtest"],
+            "note": "in-memory only — fixed dataset on disk unchanged"}
 
 # ---- outcome logging: officers record what a deployed team actually found (pilot feedback loop) ----
 class OutcomeReq(BaseModel):

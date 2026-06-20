@@ -59,6 +59,7 @@ export default function ForecastPage() {
   const [area, setArea] = useState("");
 
   const [resp, setResp] = useState<PatrolResp | null>(null);
+  const [predAll, setPredAll] = useState<{ gh6: string; pred_load: number }[]>([]); // window load for every zone (near-miss)
   const [planErr, setPlanErr] = useState(false);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState<string | null>(null); // which team row is showing "Why here?"
@@ -76,10 +77,13 @@ export default function ForecastPage() {
     let alive = true;
     setLoading(true);
     setPlanErr(false);
+    const hoursList = Array.from({ length: hi - lo + 1 }, (_, i) => lo + i);
     const t = setTimeout(() => {
-      api
-        .patrol({ weekday: DOW[dow], start_hour: lo, end_hour: hi, teams, area: trimmedArea || undefined })
-        .then((r) => { if (alive) { setResp(r); setLoading(false); } })
+      Promise.all([
+        api.patrol({ weekday: DOW[dow], start_hour: lo, end_hour: hi, teams, area: trimmedArea || undefined }),
+        api.forecast(dow, hoursList), // window load for ALL zones, to explain who just missed
+      ])
+        .then(([r, pa]) => { if (alive) { setResp(r); setPredAll(pa); setLoading(false); } })
         .catch(() => { if (alive) { setPlanErr(true); setLoading(false); } });
     }, 250);
     return () => { alive = false; clearTimeout(t); };
@@ -87,6 +91,28 @@ export default function ForecastPage() {
 
   const plan = resp?.plan ?? [];
   const totalCatches = useMemo(() => plan.reduce((s, d) => s + d.pred_load, 0), [plan]);
+
+  // "Also considered": top zones that just missed, with WHY (load rank vs the 600 m spacing rule).
+  // A zone that out-ranks a placed team by load yet isn't in the plan can only have been dropped by spacing;
+  // one ranked below the lowest placed team simply didn't reach the team count (raise teams to include it).
+  const nearMiss = useMemo(() => {
+    if (!resp || plan.length === 0 || predAll.length === 0 || !zones) return [];
+    const placed = new Set(plan.map((d) => d.gh6));
+    const placedMin = Math.min(...plan.map((d) => d.pred_load));
+    const meta = new Map(zones.map((z) => [z.gh6, z] as const));
+    const q = trimmedArea.toLowerCase();
+    const ranked = predAll
+      .filter((p) => !placed.has(p.gh6) && meta.has(p.gh6))
+      .map((p) => ({ load: p.pred_load, z: meta.get(p.gh6)! }))
+      .filter((p) => (q ? p.z.label.toLowerCase().includes(q) : true))
+      .sort((a, b) => b.load - a.load);
+    let adds = 0;
+    return ranked.slice(0, 3).map((p) => {
+      const spaced = p.load > placedMin + 0.01; // out-ranked a placed team yet absent ⇒ dropped by spacing
+      if (!spaced) adds += 1;
+      return { gh6: p.z.gh6, label: p.z.label, impact: p.z.impact_score, load: p.load, spaced, adds };
+    });
+  }, [resp, plan, predAll, zones, trimmedArea]);
 
   function downloadCsv() {
     if (!resp || plan.length === 0) return;
@@ -193,6 +219,17 @@ export default function ForecastPage() {
               onChange={(e) => setArea(e.target.value)} />
           </div>
         </div>
+        <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+          <span>Forecast window:</span>
+          <Badge variant="secondary" className="tabular-nums">
+            {`${String(lo).padStart(2, "0")}:00–${String(hi).padStart(2, "0")}:59`}
+          </Badge>
+          {end < start && (
+            <span className="font-medium text-amber-600 dark:text-amber-500">
+              end is before start, so it was flipped — for 1 PM enter 13, not 1.
+            </span>
+          )}
+        </div>
       </Card>
 
       {/* KPIs */}
@@ -222,6 +259,10 @@ export default function ForecastPage() {
             <h3 className="text-lg font-bold">Deployment plan</h3>
             <p className="mt-1 text-sm text-muted-foreground">
               {resp ? `${DOW[dow]}, ${resp.window} — ${plan.length} ${plan.length === 1 ? "team" : "teams"}` : "Building plan…"}
+            </p>
+            <p className="mt-0.5 text-xs text-muted-foreground/80">
+              Ranked by <span className="text-foreground">forecast load for this window</span> — Impact is the zone&apos;s
+              overall congestion severity (context), not the ranking key.
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -258,7 +299,7 @@ export default function ForecastPage() {
                 <TableHead>Deploy to</TableHead>
                 <TableHead>Top violation</TableHead>
                 <TableHead className="text-right">Exp. catches</TableHead>
-                <TableHead className="w-[160px]">Impact</TableHead>
+                <TableHead className="w-[160px]">Impact (overall)</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -340,6 +381,29 @@ export default function ForecastPage() {
               })}
             </TableBody>
           </Table>
+        )}
+        {!loading && !planErr && nearMiss.length > 0 && (
+          <div className="mt-4 rounded-lg border border-dashed border-border bg-muted/20 p-3">
+            <div className="mb-1.5 text-xs font-medium text-foreground">Also considered (just missed the cut)</div>
+            <ul className="space-y-1 text-xs text-muted-foreground">
+              {nearMiss.map((m) => (
+                <li key={m.gh6} className="flex flex-wrap items-baseline gap-x-2">
+                  <span className="font-medium text-foreground">{m.label}</span>
+                  <span className="tabular-nums">~{Math.round(m.load)} forecast · impact {Math.round(m.impact)}</span>
+                  <span>
+                    —{" "}
+                    {m.spaced
+                      ? "skipped to avoid stacking teams within 600 m of a placed team"
+                      : `add ${m.adds} more team${m.adds === 1 ? "" : "s"} to include it`}
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-2 text-[11px] text-muted-foreground/70">
+              A high overall Impact doesn&apos;t guarantee a team — the planner deploys to the busiest zones
+              <span className="text-foreground"> for this exact window</span>, then spaces them out.
+            </p>
+          </div>
         )}
         <p className="mt-4 text-xs text-muted-foreground">
           Tap any team for <span className="text-foreground">why it&apos;s placed there</span> · share the plan to WhatsApp,

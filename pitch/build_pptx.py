@@ -1,7 +1,7 @@
 """
-Generate pitch/ParkPulse_Deck.pptx — a dark-themed, finale-ready deck.
+Generate pitch/ParkPulse_Deck.pptx — a dark-themed submission deck (judge- & AI-readable, self-contained).
 Run:  pip install python-pptx  &&  python pitch/build_pptx.py
-Mirrors pitch/PITCH_DECK.md (keep them in sync). Replace [Team Name] before presenting.
+Mirrors pitch/PITCH_DECK.md (keep them in sync).
 """
 from pathlib import Path
 from pptx import Presentation
@@ -49,89 +49,115 @@ def _text(slide, left, top, width, height, runs, align=PP_ALIGN.LEFT, anchor=MSO
 
 def title_slide():
     s = prs.slides.add_slide(BLANK); _bg(s)
-    _text(s, Inches(0.9), Inches(2.4), Inches(11.5), Inches(3),
+    _text(s, Inches(0.9), Inches(2.2), Inches(11.8), Inches(3.2),
           [("ParkPulse", 60, FG, True),
            ("From 298,000 parking tickets to where to stand tomorrow.", 26, ACCENT, False),
+           ("Enforcement intelligence for the Bengaluru Traffic Police — built on their own challan data.", 16, MUTED, False),
            ("", 8, MUTED, False),
            ("Theme 1 — Poor Visibility on Parking-Induced Congestion", 16, MUTED, False),
-           ("Gridlock Hackathon 2.0  ·  [Team Name]", 16, MUTED, False)])
+           ("Gridlock Hackathon 2.0  ·  TeamX", 16, MUTED, False)])
     return s
 
 
 def content_slide(kicker, title, bullets, footer=None):
     s = prs.slides.add_slide(BLANK); _bg(s)
     _text(s, Inches(0.9), Inches(0.95), Inches(11.5), Inches(0.4), [(kicker, 13, ACCENT, True)])
-    _text(s, Inches(0.9), Inches(1.35), Inches(11.5), Inches(1.0), [(title, 34, FG, True)])
-    runs = [("•  " + b, 19, FG, False) for b in bullets]
-    _text(s, Inches(1.0), Inches(2.75), Inches(11.2), Inches(3.6), runs, space=12)
+    _text(s, Inches(0.9), Inches(1.35), Inches(11.5), Inches(1.0), [(title, 32, FG, True)])
+    runs = [("•  " + b, 18, FG, False) for b in bullets]
+    _text(s, Inches(1.0), Inches(2.7), Inches(11.4), Inches(3.8), runs, space=11)
     if footer:
-        _text(s, Inches(0.9), Inches(6.6), Inches(11.5), Inches(0.6), [(footer, 13, MUTED, False)])
+        _text(s, Inches(0.9), Inches(6.7), Inches(11.5), Inches(0.6), [(footer, 13, MUTED, False)])
     return s
 
 
 def stat_slide(kicker, title, big, big_label, bullets):
     s = prs.slides.add_slide(BLANK); _bg(s)
     _text(s, Inches(0.9), Inches(0.95), Inches(11.5), Inches(0.4), [(kicker, 13, ACCENT, True)])
-    _text(s, Inches(0.9), Inches(1.35), Inches(11.5), Inches(1.0), [(title, 34, FG, True)])
+    _text(s, Inches(0.9), Inches(1.35), Inches(11.5), Inches(1.0), [(title, 32, FG, True)])
     # big number
     _text(s, Inches(0.9), Inches(2.8), Inches(4.6), Inches(2.6),
           [(big, 110, ACCENT, True), (big_label, 16, MUTED, False)], anchor=MSO_ANCHOR.MIDDLE)
-    runs = [("•  " + b, 19, FG, False) for b in bullets]
-    _text(s, Inches(5.9), Inches(2.9), Inches(6.6), Inches(3.4), runs, space=12)
+    runs = [("•  " + b, 18, FG, False) for b in bullets]
+    _text(s, Inches(5.9), Inches(2.9), Inches(6.6), Inches(3.4), runs, space=11)
     return s
 
 
+# 1
 title_slide()
+# 2
 content_slide("The problem · Relevance", "Enforcement is flying blind", [
-    "Illegal parking near markets, metros & hubs blocks live lanes and junctions.",
-    "Enforcement is reactive & patrol-based — officers go on instinct.",
-    "No heatmap · no prioritization · no way to schedule scarce teams."])
-content_slide("The data · Feasibility", "Built on real BTP data", [
-    "298,445 real violation records · 150 days · zero missing fields.",
-    "Top 1% of locations hold 33% of all violations.",
-    "15% of vehicles cause 34% of them."],
+    "Illegal parking near markets, metros & hubs blocks live lanes and junctions — the city's most visible congestion source.",
+    "Enforcement is reactive & patrol-based: a few teams, a whole division, sent on instinct.",
+    "No city-wide heatmap · no prioritization · no way to schedule scarce teams by where/when parking actually hurts."])
+# 3
+content_slide("The data · Feasibility", "We didn't invent data — we sharpened theirs", [
+    "298,445 real BTP violation records · 151 days · 802 zones · zero missing fields.",
+    "Wildly concentrated: the top 1% of locations hold 33% of all violations.",
+    "15% of vehicles cause 34% of violations — a chronic-offender tail.",
+    "That concentration is the opportunity: a few well-placed teams cover a disproportionate share."],
     footer="Their own challan data — no new sensors, nothing invented.")
-content_slide("The honest insight · Trust", "We read the data honestly", [
-    "This is enforcement data, not demand — where officers caught parking.",
-    "~93% of tickets are written before 1 PM; <0.3% in the 5–9 PM peak.",
-    "So we optimize enforcement efficiency and flag the evening blind spot."])
-content_slide("The solution · Innovation", "A closed decision loop — not a dashboard", [
-    "Detect → Score → Forecast → Deploy → Target.",
-    "It ends in an action a supervisor can brief tomorrow.",
-    "Outcomes feed back in and sharpen the next plan."])
-content_slide("Detect & Score", "One transparent number per zone", [
-    "City-wide 3-D hotspot map (geohash hexbins).",
-    "Congestion Impact Score 0–100 = violations × severity × flow-criticality.",
-    "Junction-blocking and main-road violations weigh most."])
-content_slide("Forecast · Innovation", "Validated the hard way", [
-    "Predicts violations per zone × weekday × hour.",
-    "Honest held-out backtest: r = 0.70, MAE 2.01 — tested on the unseen future.",
-    "Benchmarked LightGBM (scored lower, 0.69) → kept the interpretable model."])
-stat_slide("Proven impact · Real-world impact", "Proven, not claimed", "38%", "captured · 10 teams · on unseen data", [
-    "Replayed a 10-team plan on 31 days the model never saw.",
-    "Positioned for ~38% of the violations actually logged…",
-    "…vs ~1.3% spread evenly. A validated efficiency gain."])
-content_slide("Deploy & Target · Impact", "From insight to a plan you brief tomorrow", [
-    "One click → a spaced patrol plan, shared by WhatsApp / print / CSV at roll-call.",
-    "Explainable: tap any team for why it's placed (forecast load, impact, trend).",
-    "Repeat-offender target lists (15% → 34%): owner-notice / escalated / tow CSV."])
-content_slide("Ask ParkPulse · Innovation", "A real AI agent — not a chatbot", [
-    "Gemini function-calling over the actual forecaster & optimizer.",
-    "Multilingual (English / Hindi / Kannada) + voice input + memory.",
-    "An officer just asks: 'Plan 6 teams for Friday evening near KR Market.'"])
-content_slide("By design · Live & self-improving", "Live, explainable & self-improving", [
-    "Explainable: tap any team → why it's placed (forecast, junction/main-road impact, trend).",
+# 4
+content_slide("The honest insight · Trust", "We read the data for what it is — enforcement, not demand", [
+    "It shows where officers caught parking, not a god's-eye view of where parking is worst.",
+    "Morning-heavy: ~93% of tickets are written before 1 PM; <0.3% in the 5–9 PM evening peak.",
+    "So we make two honest claims, not one inflated one: optimize the effort you already spend,",
+    "and flag the evening blind spot you're missing — instead of pretending to predict the whole city."])
+# 5
+content_slide("The solution · Innovation", "Not a dashboard — a closed decision loop", [
+    "Detect → Score → Forecast → Deploy → Target → (outcomes feed back).",
+    "It ends in an action a supervisor can brief at tomorrow's roll-call, not a chart to stare at.",
+    "Every stage is transparent and explainable — no black boxes to take on faith."])
+# 6
+content_slide("Detect & Score · Technical", "One transparent number ranks every zone", [
+    "City-wide 3-D hotspot map over geohash hexbins (gh6 ≈ 1.2 km, gh7 ≈ 150 m).",
+    "Congestion Impact Score 0–100 = violations × avg severity × flow-criticality.",
+    "Junction-blocking and main-road violations weigh most — 100 cars on a footpath ≠ 100 blocking a junction.",
+    "Fully explainable: anyone can see why a zone scores what it does — no learned weights to defend."])
+# 7
+content_slide("Forecast · Innovation + credibility", "A forecast we tested on the future, not the past", [
+    "Predicts violations per zone × weekday × hour via an empirical-Bayes shrinkage model (sparse cells stay stable).",
+    "Honest held-out backtest: r = 0.70, MAE 2.01 — trained on early weeks, scored on weeks it never saw.",
+    "Benchmarked LightGBM: it scored lower (0.69) and we couldn't explain it → kept the interpretable model."])
+# 8
+stat_slide("Proven impact · Real-world impact", "Proven, not claimed", "38%", "captured · 10 teams · 31 unseen days", [
+    "Replayed a 10-team plan across 31 held-out days the model never saw.",
+    "Those teams would have been sitting on ~38% of the violations actually logged…",
+    "…vs ~1.3% spread evenly (and well above a static 'usual hotspots' plan too).",
+    "A validated efficiency gain on unseen data — most teams have zero validation."])
+# 9
+content_slide("Deploy & Target · Impact + Trust", "The deliverable an officer uses — auditable both ways", [
+    "One click → a spaced patrol plan (teams ≥600 m apart), shared by WhatsApp / print / CSV at roll-call.",
+    "Why a team IS there: tap it for forecast load · junction/main-road impact · 3-week trend.",
+    "Why a strong zone ISN'T (new): an 'Also considered' panel shows what just missed and why — auditable, not a black box.",
+    "Target chronic offenders (15% → 34%): ready owner-notice / escalated-penalty / tow-priority CSV lists."])
+# 10
+content_slide("Ask ParkPulse · Innovation", "A real AI agent over the live models — not a chatbot", [
+    "Gemini function-calling runs the actual forecaster & optimizer; every number is grounded in a tool result.",
+    "Multilingual (English / Hindi / Kannada) + voice input + conversation memory.",
+    "An officer just asks or says: 'Plan 6 teams for Friday evening near KR Market.'"])
+# 11
+content_slide("By design · Integrity", "Live, explainable & self-improving", [
     "Event-aware: auto-flags unusual days (festivals / match days) above the weekday norm.",
-    "Self-improving: a live ingest endpoint cleans new challans + rebuilds models in seconds.",
-    "Integrity: we never modify the fixed competition dataset — ingest is architecture, not run on it."])
-content_slide("Feasibility", "Deployable today", [
-    "Runs on a laptop · only data BTP already collects · no new sensors.",
-    "Two apps share one brain: a live Streamlit demo + a full-stack product.",
-    "Geohash engine generalizes to any city or violation type."])
+    "Full-day planner: morning → afternoon → evening at once (361 → 36 → 2) — see the evening blind spot.",
+    "Data flywheel: a live ingest endpoint cleans new challans + rebuilds models in seconds; officers log real outcomes.",
+    "Integrity: we never modify the fixed dataset — ingest is live-data architecture, outcome logs in-memory only."])
+# 12
+content_slide("Architecture & tech · Technical", "Two front-ends, one brain — small, fast, explainable", [
+    "One engine (core.py, pandas/numpy): EB-shrinkage forecaster · impact score · spaced greedy optimizer · honest backtest · simulator.",
+    "Two apps share it: a live Streamlit demo + full-stack FastAPI (Render) & Next.js 16 / React 19 / deck.gl (Vercel).",
+    "Gemini co-pilot runs server-side over the real models — no GPU, no training pipeline to babysit, no black box."])
+# 13
+content_slide("Feasibility · rollout", "Deployable today — on data BTP already collects", [
+    "Runs on a laptop · only the existing challan data · no new sensors, no procurement.",
+    "Live as a web app today; the full-stack product is deployment-ready (FastAPI on Render + Next.js on Vercel).",
+    "The geohash engine generalizes to any city or violation type — not parking-specific.",
+    "Next step for BTP: a nightly challan feed + a few evening pilot deployments to start the flywheel."])
+# 14
 content_slide("Close", "Why ParkPulse wins", [
-    "Feasible — working software today.   Relevant — your data, read honestly.",
-    "Innovative — a decision loop + an agentic voice co-pilot + a validated proof.",
-    "Real impact — a plan you brief tomorrow, a 38% proven gain, offender targeting.",
+    "Feasible — working software today, on data BTP already has, no new hardware.",
+    "Relevant — their data, their problem, read honestly (enforcement ≠ demand; evening blind spot named).",
+    "Innovative — a closed decision loop + an agentic voice co-pilot + transparency both ways.",
+    "Real impact — a plan you brief tomorrow, a 38% validated efficiency gain, offender targeting.",
     "Turning what already happened into where to stand tomorrow."],
     footer="Live demo: flipkart-gridlock-20-r2-rinxb9yibzp8knp6quhfew.streamlit.app")
 

@@ -68,9 +68,10 @@ on the past, tested on the **unseen future.** Correlation **point-seven-zero** �
 
 ### 1:18–1:44 · DEPLOY — *screen: Saturday · 9–13 · 8 teams → plan appears → tap a team ("why?") → click WhatsApp*
 **SAY:** "Now the payoff. A supervisor picks a shift and the number of teams — and ParkPulse places every team on the
-highest-impact, well-spaced corners. Tap a team and it tells you **why** it's there. Then share the plan straight to a
-**WhatsApp** patrol group, or export a CSV to brief at roll-call. Instant, deployable, today."
-*(tap a row as you say "why it's there"; hover the WhatsApp button as you say "WhatsApp")*
+highest-impact, well-spaced corners. Tap a team and it tells you **why** it's there — and it even shows the strong zones
+that **just missed**, and why. Then share the plan straight to a **WhatsApp** patrol group, or export a CSV to brief at
+roll-call. Instant, deployable, today."
+*(tap a row as you say "why it's there"; glance at the "Also considered" strip below the table; hover the WhatsApp button as you say "WhatsApp")*
 
 ### 1:42–2:08 · THE PROOF ⭐ — *screen: Coverage & ROI → the "Proven impact" card; pause on the 38% bars*
 **SAY:** "Does it actually work? We replayed a ten-team plan on **31 days the model had never seen.** It would have been
@@ -83,11 +84,12 @@ sitting on **thirty-eight percent** of the violations that actually happened —
 AI **agent** running our actual models, not a chatbot. It even remembers the conversation."
 
 ### 2:34–2:50 · LIVE & SELF-IMPROVING — *screen: open the Full-day Planner (/day) — morning 361 → evening 2*
-**SAY:** "And it's built to get better. The full-day view shows the evening blind spot — almost no enforcement there
-today. New challans flow through a live ingest endpoint that rebuilds the models in seconds — the architecture for a
-nightly feed. Deploy in the evenings and the gap fills itself. And we never touch the fixed competition data — that
-pipeline is for live BTP data." *(DESCRIBE the ingest — do NOT click any add-data control. 2-min cut: "The full-day
-view shows the evening blind spot; deploy there and it fills itself.")*
+**SAY:** "And it's built to get better. The full-day view finds the evening blind spot — almost no enforcement there
+today — and **nudges you to move a couple of low-value morning teams into that gap.** New challans flow through a live
+ingest endpoint that rebuilds the models in seconds — the architecture for a nightly feed. Deploy in the evenings and
+the gap fills itself. And we never touch the fixed competition data — that pipeline is for live BTP data." *(DESCRIBE
+the ingest — do NOT click any add-data control. The blind spot is derived from the data, not hardcoded. 2-min cut: "The
+full-day view finds the evening blind spot and tells you to shift teams into it.")*
 
 ### 2:50–3:00 · CLOSE — *talking head, look at lens, calm smile*
 **SAY:** "ParkPulse — turning what already happened into **where to stand tomorrow.** Thank you." *(hold the smile 2s
@@ -105,8 +107,8 @@ the score explanation; the proof and the co-pilot must stay.
 ## 3. Shot list / b-roll to capture (record these clean, in this order)
 1. Command Center map — a slow drag + tilt (10s of usable footage).
 2. Coverage-by-hour bars (the evening dip).
-3. Forecast page — r=0.70 KPI + generating a plan + **tap a team ("why here?")** + the **WhatsApp/CSV** buttons.
-4. Full-day Planner (`/day`) — the morning→evening collapse (**361 → 36 → 2**) + the evening blind-spot card.
+3. Forecast page — r=0.70 KPI + generating a plan + **tap a team ("why here?")** + the **"Also considered" strip** + the **WhatsApp/CSV** buttons.
+4. Full-day Planner (`/day`) — the morning→evening collapse (**361 → 36 → 2**) + the evening blind-spot card + the **reallocation nudge**.
 5. Coverage & ROI — the **38% Proven-impact card** (hold 4s).
 6. Ask page — the **mic** click + a spoken query rendering a plan + the conversation history rail.
 7. Command Center — the **Data-freshness card** (just show it + its integrity note) + the **Unusual-days** card.

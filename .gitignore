@@ -39,3 +39,6 @@ Thumbs.db
 
 # runtime outcome log (pilot feedback)
 data/outcomes.jsonl
+
+# MS Office temp/lock files
+~$*

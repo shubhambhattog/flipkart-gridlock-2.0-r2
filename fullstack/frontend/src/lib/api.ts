@@ -80,8 +80,9 @@ export const api = {
   copilot: (message: string, history: ChatTurn[] = []) => post<CopilotResp>("/copilot", { message, history }),
   assistant: (message: string, history: ChatTurn[] = []) => post<CopilotResp>("/assistant", { message, history }),
   refresh: () => post<{ status: string; violations: number; backtest: Meta["backtest"] }>("/refresh", {}),
-  ingest: (records: Record<string, unknown>[], persist = true) =>
-    post<{ status: string; added: number; violations: number }>("/ingest", { records, persist }),
+  // in-memory only on the server — never writes the fixed clean.pkl (integrity)
+  ingest: (records: Record<string, unknown>[]) =>
+    post<{ status: string; added: number; violations: number }>("/ingest", { records }),
   anomalies: () => get<{ anomalies: Anomaly[] }>("/anomalies"),
   outcome: (o: { team: string; zone: string; gh6: string; weekday: string; window: string; found: number }) =>
     post<{ status: string; total: number }>("/outcome", o),

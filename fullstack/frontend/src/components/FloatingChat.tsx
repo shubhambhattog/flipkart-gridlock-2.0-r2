@@ -71,7 +71,7 @@ export default function FloatingChat() {
       <button
         onClick={() => setOpen((o) => !o)}
         aria-label={open ? "Close assistant" : "Open ParkPulse assistant"}
-        className="fixed bottom-6 right-6 z-50 grid h-12 w-12 place-items-center rounded-full bg-primary text-primary-foreground shadow-lg ring-1 ring-black/10 transition-transform hover:scale-105 active:scale-95"
+        className="fixed bottom-6 right-6 z-50 grid h-12 w-12 cursor-pointer place-items-center rounded-full bg-primary text-primary-foreground shadow-lg ring-1 ring-black/10 transition-transform hover:scale-105 active:scale-95"
       >
         {open ? <X className="h-5 w-5" /> : <Sparkles className="h-5 w-5" />}
       </button>
@@ -86,10 +86,10 @@ export default function FloatingChat() {
               <div className="text-sm font-semibold leading-tight">ParkPulse Assistant</div>
               <div className="text-[11px] text-muted-foreground">Navigation + help · guardrailed</div>
             </div>
-            <button onClick={newChat} aria-label="New chat" title="New chat" className="text-muted-foreground hover:text-foreground">
+            <button onClick={newChat} aria-label="New chat" title="New chat" className="cursor-pointer text-muted-foreground hover:text-foreground">
               <RotateCcw className="h-4 w-4" />
             </button>
-            <button onClick={() => setOpen(false)} aria-label="Close" className="text-muted-foreground hover:text-foreground">
+            <button onClick={() => setOpen(false)} aria-label="Close" className="cursor-pointer text-muted-foreground hover:text-foreground">
               <X className="h-4 w-4" />
             </button>
           </div>

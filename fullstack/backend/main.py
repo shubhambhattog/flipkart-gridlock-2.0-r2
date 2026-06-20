@@ -54,6 +54,14 @@ def _build_meta(df, zones):
     }
 
 DATA_DIR = Path(__file__).resolve().parents[2] / "data"
+OUTCOMES_FILE = DATA_DIR / "outcomes.jsonl"
+
+def _load_outcomes():
+    try:
+        with open(OUTCOMES_FILE, encoding="utf-8") as f:
+            return [json.loads(line) for line in f if line.strip()]
+    except Exception:
+        return []
 
 def _build_state(df):
     """(Re)compute every derived model from the violations df and store it in STATE.
@@ -64,11 +72,14 @@ def _build_state(df):
         grid=(df.groupby("gh7").agg(lat=("lat", "median"), lon=("lon", "median"),
                                     n=("lat", "size")).reset_index()),
         meta=_build_meta(df, zones),
-        impact=core.deployment_simulation(df))
+        impact=core.deployment_simulation(df),
+        anomalies=core.detect_anomalies(df),
+        trends=core.zone_trends(df))
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     _build_state(core.load_clean())
+    STATE["outcomes"] = _load_outcomes()
     key = os.environ.get("GEMINI_API_KEY")
     if key:
         from google import genai
@@ -94,6 +105,11 @@ def meta():
 @app.get("/impact")
 def impact():
     return STATE["impact"]
+
+@app.get("/anomalies")
+def anomalies():
+    """Unusual high-violation days (likely events / festivals) — robust z-score per weekday."""
+    return {"anomalies": STATE.get("anomalies", [])}
 
 @app.get("/zones")
 def zones():
@@ -170,8 +186,14 @@ def patrol(req: PatrolReq):
             zsub = STATE["zones"][mask]
     pred = core.predict_load(STATE["fc"], dow, range(h0, h1 + 1))
     plan = core.allocate_patrols(zsub, pred, k=max(1, req.teams))
+    recs = _records(plan)
+    trends = STATE.get("trends", {})
+    for r in recs:                                    # attach the zone's recent trend for explainability
+        t = trends.get(r.get("gh6"))
+        if t:
+            r["trend"], r["trend_pct"] = t["trend"], t["pct"]
     return {"weekday": copilot.DOW[dow], "window": f"{h0:02d}:00-{h1:02d}:59",
-            "teams": int(len(plan)), "plan": _records(plan)}
+            "teams": int(len(plan)), "plan": recs}
 
 # ---- data flywheel: ingest new challans + rebuild models in place (no restart) ----
 @app.post("/refresh")
@@ -200,6 +222,33 @@ def ingest(req: IngestReq):
     _build_state(df)
     return {"status": "ingested", "added": int(len(cleaned)),
             "violations": int(len(STATE["df"])), "backtest": STATE["meta"]["backtest"]}
+
+# ---- outcome logging: officers record what a deployed team actually found (pilot feedback loop) ----
+class OutcomeReq(BaseModel):
+    team: str = ""
+    zone: str = ""
+    gh6: str = ""
+    weekday: str = ""
+    window: str = ""
+    found: int = 0
+
+@app.post("/outcome")
+def log_outcome(req: OutcomeReq):
+    """An officer logs what a deployed team actually found. Persisted to outcomes.jsonl to feed the model."""
+    rec = req.model_dump()
+    STATE.setdefault("outcomes", []).append(rec)
+    try:
+        with open(OUTCOMES_FILE, "a", encoding="utf-8") as f:
+            f.write(json.dumps(rec) + "\n")
+    except Exception:
+        pass
+    return {"status": "logged", "total": len(STATE["outcomes"])}
+
+@app.get("/outcomes")
+def get_outcomes():
+    o = STATE.get("outcomes", [])
+    return {"outcomes": o[-50:], "total": len(o),
+            "total_found": int(sum(int(x.get("found", 0)) for x in o))}
 
 class Turn(BaseModel):
     role: str = "user"          # "user" | "assistant"

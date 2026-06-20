@@ -36,3 +36,6 @@ fullstack/backend/__pycache__/
 Thumbs.db
 
 # NOTE: data/clean.pkl and data/junctions.pkl ARE committed (needed for cloud deploy).
+
+# runtime outcome log (pilot feedback)
+data/outcomes.jsonl

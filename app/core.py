@@ -273,6 +273,44 @@ def deployment_simulation(df: pd.DataFrame, k_list=(6, 8, 10, 12, 15), train_fra
     return {"cutoff": str(cut), "test_days": int(te["ymd"].nunique()), "curve": out}
 
 # --------------------------------------------------------------------------
+_DOW = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+
+def detect_anomalies(df: pd.DataFrame, top: int = 8, z_min: float = 2.5) -> list:
+    """Days whose violation count is unusually high for that weekday — likely events / festivals / market days.
+       Robust z-score (median + MAD per weekday) so it's not skewed by the spikes themselves."""
+    daily = df.groupby(["ymd", "dow"]).size().rename("n").reset_index()
+    rows = []
+    for dow, g in daily.groupby("dow"):
+        med = float(g["n"].median())
+        mad = float((g["n"] - med).abs().median()) or 1.0
+        for _, r in g.iterrows():
+            z = (r["n"] - med) / (1.4826 * mad)
+            if z >= z_min:
+                rows.append({"date": str(r["ymd"]), "weekday": _DOW[int(dow)],
+                             "violations": int(r["n"]), "expected": int(round(med)),
+                             "z": round(float(z), 1),
+                             "pct_above": int(round((r["n"] / med - 1) * 100)) if med else 0})
+    return sorted(rows, key=lambda x: x["z"], reverse=True)[:top]
+
+def zone_trends(df: pd.DataFrame, recent_days: int = 21) -> dict:
+    """Per-zone (gh6) recent trend: avg daily violations in the last `recent_days` vs the prior block.
+       Returns {gh6: {'trend': 'up'|'down'|'flat', 'pct': int}} — fuels the 'recent trend' explainability line."""
+    dates = np.sort(df["ymd"].unique())
+    if len(dates) < recent_days * 2:
+        return {}
+    recent_cut, prior_cut = dates[-recent_days], dates[-2 * recent_days]
+    recent = df[df["ymd"] >= recent_cut].groupby("gh6").size() / recent_days
+    prior = df[(df["ymd"] >= prior_cut) & (df["ymd"] < recent_cut)].groupby("gh6").size() / recent_days
+    out = {}
+    for gh6 in recent.index:
+        r, p = float(recent.get(gh6, 0.0)), float(prior.get(gh6, 0.0))
+        if r < 0.1 and p < 0.1:
+            continue
+        pct = ((r - p) / p * 100) if p > 0 else 100.0
+        out[gh6] = {"trend": "up" if pct > 15 else "down" if pct < -15 else "flat", "pct": int(round(pct))}
+    return out
+
+# --------------------------------------------------------------------------
 if __name__ == "__main__":
     df = load_clean()
     print("clean:", df.shape)

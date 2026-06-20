@@ -126,14 +126,17 @@ That's not a promise. That's tested on data it had never seen."
 
 ## Slide 9 — Deploy & Target *(Real-world impact)*
 **On slide:**
-- One click → a **spaced patrol plan + CSV** a supervisor briefs at morning roll-call.
+- One click → a **spaced patrol plan** a supervisor shares by **WhatsApp / print / CSV** at roll-call.
+- **Explainable:** tap any team for *why it's placed there* (forecast load · junction/main-road impact · recent trend).
 - **Repeat-offender target lists** (15% → 34%): owner-notice / escalated-penalty / tow-priority CSV.
 
 **SAY:** "This is the deliverable an officer actually uses. Pick the shift and the number of teams — ParkPulse places
-each team on the highest-impact, well-spaced corners and exports a CSV. And it hands you the chronic repeat
-offenders as a ready target list for notices and tow priority."
+each team on the highest-impact, well-spaced corners. Tap a team and it tells you *why* it's there. Then share the
+whole plan straight to a WhatsApp patrol group, print it, or export a CSV — and target the chronic repeat offenders
+with a ready list for notices and tow priority."
 
-**VISUAL:** Generate a plan live (map pins + table) → click Download CSV. Then the offender CSV buttons.
+**VISUAL:** Generate a plan live → tap a team to show the "why here?" → click the WhatsApp/Print buttons. Then the
+offender CSV buttons.
 
 ---
 
@@ -151,20 +154,25 @@ It remembers the conversation. This is an agent over our models, not a chatbot."
 
 ---
 
-## Slide 11 — It gets better every day *(the data flywheel — long-term vision)*
+## Slide 11 — Live, explainable & self-improving *(by design)*
 **On slide:**
-- Every new challan **sharpens** the forecast — a **nightly refresh**, no heavy retraining.
-- The evening blind spot is **self-healing**: deploy a few evening teams → new data → the model learns the true
-  evening pattern → next plan is better. **A compounding loop.**
-- Roadmap: **Retrospective (today) → Nightly refresh → Live ASTraM / camera feed.**
+- **Event-aware:** auto-flags unusual days (festivals / match days) running above the weekday norm.
+- **Full-day view:** plans morning/afternoon/evening at once — exposes the evening blind spot visually.
+- **Self-improving by design:** a live `POST /ingest` cleans new challans and rebuilds the models in seconds — the
+  architecture for a nightly BTP feed. The evening blind spot is self-healing: deploy there → new data → better plan.
+- **Integrity:** we never modify the competition dataset — the ingest pipeline is shown as architecture, not run on it.
 
-**SAY:** "And it compounds. The forecaster is a fast, transparent model rebuilt from the raw challans in seconds — so
-every night's new tickets make it sharper, automatically. Even better: the moment you deploy in the evenings,
-*those evenings start generating data* — the blind spot fills itself, and the model learns what it couldn't see
-before. Tomorrow we fuse live traffic and camera feeds to replace our impact *proxy* with real measurement. It
-gets smarter the more you use it — on data you already collect, running on a laptop."
+**SAY:** "Three things make this more than a demo. One — it flags unusual days, like festivals, automatically. Two —
+the full-day planner shows all three shifts at once, and you can *see* the evening blind spot. Three — it's built to
+improve: new challans flow through a live ingest endpoint that rebuilds the models in seconds — the architecture for a
+nightly feed. And to be clear, we never touch the fixed competition data; that pipeline is for live BTP data. The
+evening gap you saw? Deploy there and it fills itself — it gets smarter the more they use it."
 
-**VISUAL:** A simple flywheel diagram: Deploy → New data → Sharper forecast → Better deploy (loop).
+**VISUAL:** The **Full-day Planner** — morning **361** → afternoon **36** → evening **2** forecast catches (the blind
+spot, live on the fixed data) — beside the Data-freshness card showing the ingest/refresh architecture + integrity note.
+
+> **Demo rule:** *describe* the ingest endpoint — do **not** click any "add data" control on camera. The dataset
+> stays fixed; everything you click in the demo is analysis of the official 298,445 records.
 
 ---
 

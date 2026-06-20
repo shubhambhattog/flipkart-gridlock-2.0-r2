@@ -1,11 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
-import { RefreshCw, Database, AlertTriangle } from "lucide-react";
+import { Database, AlertTriangle, ShieldCheck } from "lucide-react";
 import { api, type Meta, type GridCell, type Anomaly } from "@/lib/api";
 import { Card, Bars, Spinner } from "@/components/ui";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 
 const HotspotMap = dynamic(() => import("@/components/HotspotMap"), {
   ssr: false,
@@ -16,8 +14,6 @@ export default function Home() {
   const [meta, setMeta] = useState<Meta | null>(null);
   const [grid, setGrid] = useState<GridCell[] | null>(null);
   const [anomalies, setAnomalies] = useState<Anomaly[]>([]);
-  const [busy, setBusy] = useState<null | "refresh" | "ingest">(null);
-  const [adminMsg, setAdminMsg] = useState("");
   const [err, setErr] = useState(false);
 
   useEffect(() => {
@@ -27,30 +23,6 @@ export default function Home() {
   }, []);
 
   const fmt = (n: number) => n.toLocaleString("en-IN");
-
-  async function doRefresh() {
-    setBusy("refresh"); setAdminMsg("");
-    try {
-      const r = await api.refresh();
-      await api.meta().then(setMeta);
-      setAdminMsg(`Models rebuilt from disk · r = ${r.backtest.pearson_r}`);
-    } catch { setAdminMsg("Refresh failed — is the backend running?"); }
-    finally { setBusy(null); }
-  }
-  async function doIngestSample() {
-    setBusy("ingest"); setAdminMsg("");
-    const rec = {
-      latitude: 12.9766, longitude: 77.5993, created_datetime: "2024-05-10T19:15:00Z",
-      violation_type: '["PARKING IN A MAIN ROAD"]', police_station: "Demo",
-      junction_name: "No Junction", vehicle_type: "Car", vehicle_number: "KA01DEMO",
-    };
-    try {
-      const r = await api.ingest([rec], false); // not persisted — repeatable demo
-      await api.meta().then(setMeta);
-      setAdminMsg(`Ingested ${r.added} challan · models rebuilt · ${fmt(r.violations)} total`);
-    } catch { setAdminMsg("Ingest failed — is the backend running?"); }
-    finally { setBusy(null); }
-  }
 
   if (err)
     return (
@@ -170,26 +142,23 @@ export default function Home() {
                 <div>
                   <h3 className="text-lg font-bold">Data freshness</h3>
                   <p className="mt-1 text-sm text-[var(--muted-foreground)]">
-                    Live model state — new challans rebuild it in seconds, no restart.
+                    Built to ingest new challans and rebuild the models in seconds — ready for a nightly BTP feed.
                   </p>
                 </div>
                 <Database className="h-5 w-5 text-[var(--muted-foreground)]/60" />
               </div>
               <div className="mt-4 flex items-baseline gap-2">
                 <span className="text-3xl font-bold tabular-nums">{fmt(meta.totals.violations)}</span>
-                <span className="text-xs text-[var(--muted-foreground)]">violations live</span>
+                <span className="text-xs text-[var(--muted-foreground)]">violations loaded</span>
               </div>
-              <div className="mt-4 flex flex-wrap gap-2">
-                <Button variant="outline" size="sm" onClick={doIngestSample} disabled={busy !== null}>
-                  <Database className="h-4 w-4" /> {busy === "ingest" ? "Ingesting…" : "Simulate new challan"}
-                </Button>
-                <Button variant="outline" size="sm" onClick={doRefresh} disabled={busy !== null}>
-                  <RefreshCw className={cn("h-4 w-4", busy === "refresh" && "animate-spin")} /> Rebuild from disk
-                </Button>
-              </div>
-              {adminMsg && <p className="mt-3 text-xs text-[var(--primary)]">{adminMsg}</p>}
-              <p className="mt-2 text-[11px] text-[var(--muted-foreground)]">
-                Demo ingest isn&apos;t persisted — “Rebuild from disk” resets the count.
+              <ul className="mt-4 space-y-1.5 text-xs text-[var(--muted-foreground)]">
+                <li><code className="text-foreground">POST /ingest</code> — new records cleaned, appended, models rebuilt in place.</li>
+                <li><code className="text-foreground">POST /refresh</code> — pull a fresh dataset live, no restart.</li>
+              </ul>
+              <p className="mt-4 flex items-start gap-2 rounded-md bg-secondary/50 px-3 py-2 text-[11px] text-[var(--muted-foreground)]">
+                <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[var(--primary)]" />
+                <span>Integrity: the competition dataset stays fixed. This pipeline is the architecture for live BTP
+                data — described here, not run on the hackathon records.</span>
               </p>
             </Card>
 

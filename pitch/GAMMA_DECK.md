@@ -95,11 +95,12 @@ Illegal parking chokes Bengaluru's busiest roads.
 
 ---
 
-# It gets better every day
-- Every new challan **sharpens** the forecast — a nightly refresh, no heavy retraining.
-- Deploy a few evening teams → new data → the **blind spot fills itself** → next plan is better. A compounding loop.
-- **Rollout:** ① Retrospective (works today) → ② Nightly refresh → ③ Live ASTraM / camera feed.
-- Uses **only data BTP already collects** — no new sensors, runs on a laptop.
+# Live, explainable & self-improving
+- **Explainable:** tap any team → *why* it's placed (forecast load · junction/main-road impact · recent trend).
+- **Event-aware:** auto-flags unusual days (festivals / match days) running above the weekday norm.
+- **Self-improving by design:** a live ingest endpoint cleans new challans and rebuilds the models in seconds — the architecture for a nightly BTP feed.
+- **Integrity:** we never modify the fixed competition dataset — the ingest pipeline is shown as architecture, not run on it.
+- **Rollout:** ① Retrospective (works today) → ② Nightly feed → ③ Live ASTraM / camera feed. Runs on a laptop.
 
 ---
 

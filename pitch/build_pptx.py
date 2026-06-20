@@ -112,17 +112,18 @@ stat_slide("Proven impact · Real-world impact", "Proven, not claimed", "38%", "
     "Positioned for ~38% of the violations actually logged…",
     "…vs ~1.3% spread evenly. A validated efficiency gain."])
 content_slide("Deploy & Target · Impact", "From insight to a plan you brief tomorrow", [
-    "One click → a spaced patrol plan + CSV for morning roll-call.",
-    "Repeat-offender target lists (15% → 34%):",
-    "owner-notice / escalated-penalty / tow-priority CSV exports."])
+    "One click → a spaced patrol plan, shared by WhatsApp / print / CSV at roll-call.",
+    "Explainable: tap any team for why it's placed (forecast load, impact, trend).",
+    "Repeat-offender target lists (15% → 34%): owner-notice / escalated / tow CSV."])
 content_slide("Ask ParkPulse · Innovation", "A real AI agent — not a chatbot", [
     "Gemini function-calling over the actual forecaster & optimizer.",
     "Multilingual (English / Hindi / Kannada) + voice input + memory.",
     "An officer just asks: 'Plan 6 teams for Friday evening near KR Market.'"])
-content_slide("Long-term · It compounds", "It gets better every day", [
-    "Every new challan sharpens the forecast — a nightly refresh, no heavy retraining.",
-    "Deploy in the evenings → new data → the blind spot fills itself.",
-    "Roadmap: Retrospective (today) → Nightly refresh → Live ASTraM / camera feed."])
+content_slide("By design · Live & self-improving", "Live, explainable & self-improving", [
+    "Explainable: tap any team → why it's placed (forecast, junction/main-road impact, trend).",
+    "Event-aware: auto-flags unusual days (festivals / match days) above the weekday norm.",
+    "Self-improving: a live ingest endpoint cleans new challans + rebuilds models in seconds.",
+    "Integrity: we never modify the fixed competition dataset — ingest is architecture, not run on it."])
 content_slide("Feasibility", "Deployable today", [
     "Runs on a laptop · only data BTP already collects · no new sensors.",
     "Two apps share one brain: a live Streamlit demo + a full-stack product.",

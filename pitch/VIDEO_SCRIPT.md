@@ -33,6 +33,12 @@ Judges watch the video *first* and rank heavily on it — so the first 10 second
 - **Rehearse 3–4 full run-throughs** out loud with a timer before the real take. Re-record any segment freely; you'll
   stitch them.
 
+**⚠ Demo integrity rule (read this):** Only *click* things that **analyze the fixed 298,445 records** — the maps,
+forecast, patrol plan, full-day planner, "why here?", WhatsApp/print. **Never click any "add data / ingest / simulate
+challan" control on camera** — *describe* that capability in words. The competition dataset stays fixed; showing data
+being added looks like tampering and risks disqualification. (The judge-facing UI has no add-data button — it only
+describes the ingest pipeline — so you're safe, but don't go looking for one.)
+
 **Total time budget (3:00)** — talking-head 0:00–0:12 and 2:50–3:00 (~22s); everything else is screen + voiceover.
 
 ---
@@ -60,10 +66,11 @@ gaps." *(2-min cut: keep this — the honesty is a differentiator)*
 impact, zero to a hundred. Then we forecast violations by weekday and hour — and we validate it the hard way: trained
 on the past, tested on the **unseen future.** Correlation **point-seven-zero** — real signal, not an overfit number."
 
-### 1:18–1:42 · DEPLOY — *screen: set Saturday · 9–13 · 8 teams → plan appears → click Download CSV*
+### 1:18–1:44 · DEPLOY — *screen: Saturday · 9–13 · 8 teams → plan appears → tap a team ("why?") → click WhatsApp*
 **SAY:** "Now the payoff. A supervisor picks a shift and the number of teams — and ParkPulse places every team on the
-highest-impact, well-spaced corners, and hands them a **CSV to brief at roll-call.** Instant, deployable, today."
-*(do the click as you say "hands them a CSV")*
+highest-impact, well-spaced corners. Tap a team and it tells you **why** it's there. Then share the plan straight to a
+**WhatsApp** patrol group, or export a CSV to brief at roll-call. Instant, deployable, today."
+*(tap a row as you say "why it's there"; hover the WhatsApp button as you say "WhatsApp")*
 
 ### 1:42–2:08 · THE PROOF ⭐ — *screen: Coverage & ROI → the "Proven impact" card; pause on the 38% bars*
 **SAY:** "Does it actually work? We replayed a ten-team plan on **31 days the model had never seen.** It would have been
@@ -75,11 +82,12 @@ sitting on **thirty-eight percent** of the violations that actually happened —
 **SAY (voiceover):** "And any officer can just **ask** — by voice or text, in English, Hindi or Kannada. This is a real
 AI **agent** running our actual models, not a chatbot. It even remembers the conversation."
 
-### 2:34–2:50 · GETS BETTER OVER TIME — *screen: back to Command Center map, or the flywheel slide*
-**SAY:** "And it compounds. Every new challan makes the forecast sharper — automatically, overnight. Deploy in the
-evenings, and the blind spot **fills itself.** It gets smarter the more they use it — on data they already collect,
-running on a laptop." *(2-min cut: trim to one sentence — "Every new ticket makes it sharper; the blind spot fills
-itself.")*
+### 2:34–2:50 · LIVE & SELF-IMPROVING — *screen: open the Full-day Planner (/day) — morning 361 → evening 2*
+**SAY:** "And it's built to get better. The full-day view shows the evening blind spot — almost no enforcement there
+today. New challans flow through a live ingest endpoint that rebuilds the models in seconds — the architecture for a
+nightly feed. Deploy in the evenings and the gap fills itself. And we never touch the fixed competition data — that
+pipeline is for live BTP data." *(DESCRIBE the ingest — do NOT click any add-data control. 2-min cut: "The full-day
+view shows the evening blind spot; deploy there and it fills itself.")*
 
 ### 2:50–3:00 · CLOSE — *talking head, look at lens, calm smile*
 **SAY:** "ParkPulse — turning what already happened into **where to stand tomorrow.** Thank you." *(hold the smile 2s
@@ -97,10 +105,13 @@ the score explanation; the proof and the co-pilot must stay.
 ## 3. Shot list / b-roll to capture (record these clean, in this order)
 1. Command Center map — a slow drag + tilt (10s of usable footage).
 2. Coverage-by-hour bars (the evening dip).
-3. Forecast page — the r=0.70 KPI + generating a plan + the **Download CSV** click.
-4. Coverage & ROI — the **38% Proven-impact card** (hold 4s).
-5. Ask page — the **mic** click + a spoken query rendering a plan + the conversation history rail.
-6. (Optional) Offenders page — the CSV target-list buttons.
+3. Forecast page — r=0.70 KPI + generating a plan + **tap a team ("why here?")** + the **WhatsApp/CSV** buttons.
+4. Full-day Planner (`/day`) — the morning→evening collapse (**361 → 36 → 2**) + the evening blind-spot card.
+5. Coverage & ROI — the **38% Proven-impact card** (hold 4s).
+6. Ask page — the **mic** click + a spoken query rendering a plan + the conversation history rail.
+7. Command Center — the **Data-freshness card** (just show it + its integrity note) + the **Unusual-days** card.
+8. (Optional) Offenders page — the CSV target-list buttons.
+*(Never record an "add data / ingest" click — there's no such button in the judge UI, by design.)*
 
 Then record the **two talking-head clips** (hook + close), then the **voiceover** over the b-roll.
 

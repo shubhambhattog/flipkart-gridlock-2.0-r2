@@ -54,14 +54,6 @@ def _build_meta(df, zones):
     }
 
 DATA_DIR = Path(__file__).resolve().parents[2] / "data"
-OUTCOMES_FILE = DATA_DIR / "outcomes.jsonl"
-
-def _load_outcomes():
-    try:
-        with open(OUTCOMES_FILE, encoding="utf-8") as f:
-            return [json.loads(line) for line in f if line.strip()]
-    except Exception:
-        return []
 
 def _build_state(df):
     """(Re)compute every derived model from the violations df and store it in STATE.
@@ -79,7 +71,7 @@ def _build_state(df):
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     _build_state(core.load_clean())
-    STATE["outcomes"] = _load_outcomes()
+    STATE["outcomes"] = []
     key = os.environ.get("GEMINI_API_KEY")
     if key:
         from google import genai
@@ -234,14 +226,9 @@ class OutcomeReq(BaseModel):
 
 @app.post("/outcome")
 def log_outcome(req: OutcomeReq):
-    """An officer logs what a deployed team actually found. Persisted to outcomes.jsonl to feed the model."""
-    rec = req.model_dump()
-    STATE.setdefault("outcomes", []).append(rec)
-    try:
-        with open(OUTCOMES_FILE, "a", encoding="utf-8") as f:
-            f.write(json.dumps(rec) + "\n")
-    except Exception:
-        pass
+    """An officer logs what a deployed team actually found — the pilot feedback loop. Kept IN MEMORY only
+       (no file written), so the demo never persists anything to disk. Resets on restart."""
+    STATE.setdefault("outcomes", []).append(req.model_dump())
     return {"status": "logged", "total": len(STATE["outcomes"])}
 
 @app.get("/outcomes")

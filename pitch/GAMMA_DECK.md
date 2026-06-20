@@ -88,15 +88,17 @@ Illegal parking chokes Bengaluru's busiest roads.
 ---
 
 # Ask ParkPulse — the AI co-pilot 🤖
-- Ask in plain **English, Hindi or Kannada**: *"Plan 6 teams for Friday evening around KR Market."*
+- Ask **by text or voice**, in **English, Hindi or Kannada**: *"Plan 6 teams for Friday evening around KR Market."*
 - **Gemini function-calling** runs our *real* forecaster + optimiser and returns an actual plan + map.
-- Not a chatbot — a true agent over the models. A field officer just **asks**; no dashboard training needed.
+- A true **agent** over the models — with conversation **memory** and saved chat history. Not a chatbot.
+- A field officer just **asks**; no dashboard training needed.
 
 ---
 
-# Impact & rollout
-- **BTP gains:** city-wide visibility · prioritized zones · proactive shifts · offender targeting.
-- **Rollout:** ① Retrospective (works today) → ② Nightly refresh → ③ Live ASTraM feed.
+# It gets better every day
+- Every new challan **sharpens** the forecast — a nightly refresh, no heavy retraining.
+- Deploy a few evening teams → new data → the **blind spot fills itself** → next plan is better. A compounding loop.
+- **Rollout:** ① Retrospective (works today) → ② Nightly refresh → ③ Live ASTraM / camera feed.
 - Uses **only data BTP already collects** — no new sensors, runs on a laptop.
 
 ---

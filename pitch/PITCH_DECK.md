@@ -1,85 +1,207 @@
-# 🎤 ParkPulse — Pitch Deck (blueprint with speaker notes)
+# 🎤 ParkPulse — Pitch Deck (finale-ready)
 
-**Use this to build/refine the deck.** Each slide has: what appears **On slide**, a **Visual** suggestion,
-and **Say** (your spoken talking points). The clean text-only version for Gamma is in `GAMMA_DECK.md`.
-Target length: **11–12 slides, ~2.5–3 min.** Replace `[Team Name]` before presenting (the live demo link is already filled in).
+**Theme 1 — Poor Visibility on Parking-Induced Congestion · Gridlock Hackathon 2.0 · for the Bengaluru Traffic Police**
 
----
+This is the master slide-by-slide. Each slide has: **on-slide content** (what the audience reads — keep it sparse),
+**SAY** (speaker notes — what you say out loud), and **VISUAL** (what's on screen). A ready-to-paste block for
+Gamma/PowerPoint is in `GAMMA_DECK.md`; an actual generated `.pptx` is at `pitch/ParkPulse_Deck.pptx`.
 
-## SLIDE 1 — Title
-- **On slide:** **ParkPulse** · *"From 298K parking tickets to where to stand tomorrow."* · Theme 1 — Poor Visibility on Parking-Induced Congestion · Gridlock Hackathon 2.0 · [Team Name]
-- **Visual:** Bold title on dark; faint Bengaluru hotspot map as background; 🚦 mark.
-- **Say:** "We're [Team Name]. ParkPulse turns Bengaluru Traffic Police's own parking data into a tool that tells officers exactly *where* to enforce — and *when*."
-
-## SLIDE 2 — The problem
-- **On slide:** Illegal parking chokes Bengaluru's busiest roads — markets, metro stations, commercial hubs. Vehicles block live lanes and junctions every day.
-- **Visual:** Photo of an illegally-parked, congested Bengaluru street.
-- **Say:** "On-street illegal parking near markets and metro stations chokes carriageways and intersections every single day — one of the city's most visible, most complained-about congestion sources."
-
-## SLIDE 3 — Why it's hard today
-- **On slide:** ① Enforcement is reactive & patrol-based — officers go on instinct. ② No heatmap of where violations actually hurt traffic. ③ No way to prioritize zones or schedule teams.
-- **Visual:** Three icons; a "today → needed" contrast.
-- **Say:** "Today, enforcement is reactive. There's no city-wide heatmap, no way to rank which violations actually hurt traffic, and no data to decide where to send limited teams. It's instinct — not intelligence."
-
-## SLIDE 4 — Meet ParkPulse
-- **On slide:** A closed decision loop: **DETECT → SCORE → FORECAST → DEPLOY → TARGET.** *"Not a dashboard. A decision engine."*
-- **Visual:** The 5-stage loop diagram (circular, feeds back).
-- **Say:** "ParkPulse closes that gap with a closed loop — detect the hotspots, score them by real traffic impact, forecast when they'll flare up, generate a patrol plan, and target repeat offenders."
-
-## SLIDE 5 — Built on real data, read honestly
-- **On slide:** 298,445 real BTP records · 150 days · zero missing fields. **Honest insight:** this is *enforcement time, not demand* — ~93% logged before 1 PM. → We optimize **efficiency** & flag **blind spots**; we don't over-claim.
-- **Visual:** The weekday × hour heatmap screenshot (shows the morning concentration).
-- **Say:** "It's built on 298,000 real records — five months, clean. And we read them honestly: this shows when patrols wrote tickets, not true demand — 93% before 1 PM. So we optimize enforcement *efficiency* and flag the *evening blind spots*, instead of pretending to predict demand we can't see. The judges are BTP — they know their own data, and we respect that."
-
-## SLIDE 6 — Detect & Score
-- **On slide:** City-wide 3-D hotspot map. **Congestion Impact Score (0–100)** = volume × severity × flow-criticality. Top **1%** of locations = **33%** of violations.
-- **Visual:** Command Center hotspot map screenshot + zoom on the impact-ranked table.
-- **Say:** "First we detect — every violation mapped; the worst 1% of locations carry a third of them. But raw counts mislead, so we built a Congestion Impact Score: it weights volume by how badly each violation blocks traffic and whether it's at a junction. One transparent 0-to-100 number to rank every zone."
-
-## SLIDE 7 — Forecast
-- **On slide:** Predict violations per **zone × weekday × hour.** Empirical-Bayes shrinkage → stable even for sparse cells. **Honest backtest: r ≈ 0.70** on held-out weeks.
-- **Visual:** Forecast/Patrol page screenshot + the "How the forecast works" panel.
-- **Say:** "Then we forecast — expected violations for any zone, any weekday, any hour. Bayesian shrinkage keeps sparse cells stable. And we validate honestly: trained on the first 80% of the calendar, tested on unseen weeks — correlation 0.70. Real signal, not an overfit 0.99."
-
-## SLIDE 8 — Deploy *(the hero slide)*
-- **On slide:** Pick a shift + #teams → an instant, **spatially-spread patrol plan.** Expected catches per team · downloadable CSV. *"Every team starts where congestion will build — before it does."*
-- **Visual:** Patrol Planner screenshot — team pins on the map + the deployment table.
-- **Say:** "Here's the payoff. A supervisor picks Saturday, 9 to 1, eight teams — and in two seconds gets eight deployment points, spread so teams don't bunch up, each with the violations they'll likely encounter. Download the CSV, brief the teams. Reactive enforcement becomes proactive."
-
-## SLIDE 8b — Coverage & ROI *(targeting pays)*
-- **On slide:** A few zones hold most violations → a few well-placed teams capture a big share. **Staffing sweet spot** (extra teams add < 1%). **Blind spot:** ~93% before 1 PM, near-zero evenings.
-- **Visual:** The ROI coverage curve + the evening blind-spot bar chart (Coverage & ROI page).
-- **Say:** "Targeting isn't a nicety — it's the whole game. A few zones hold most of the violations, so a handful of well-placed teams see a big share. We even show the staffing sweet spot, where extra teams stop helping — and we flag the evening blind spot you're not covering today."
-
-## SLIDE 9 — Target repeat offenders
-- **On slide:** **15%** of vehicles cause **34%** of violations. Auto-generated target list → owner notices / escalated penalties.
-- **Visual:** Repeat-offender distribution chart + top-offenders table.
-- **Say:** "And we target the chronic minority — 15% of vehicles cause a third of all violations. ParkPulse hands BTP that short, high-value list for notices and escalated action."
-
-## SLIDE 9b — Ask ParkPulse 🤖 *(the surprise)*
-- **On slide:** Ask in **English / Hindi / Kannada** — *"Plan 6 teams for Friday evening around KR Market"* → a **real** plan + map, instantly. Powered by **Gemini function-calling** over the actual models.
-- **Visual:** The chat — a typed question → the returned deployment table + map.
-- **Say:** "And here's the surprise. An officer can just ask — in English, Hindi or Kannada — 'plan six teams for Friday evening around KR Market.' Gemini routes that to our real forecaster and optimiser and hands back an actual plan, on the map, in seconds. It's not a chatbot — it's an agent driving our models. No dashboard training; you just ask."
-
-## SLIDE 10 — Impact & rollout
-- **On slide:** **BTP gains:** visibility · prioritization · proactive shifts · offender targeting. **Rollout:** ① Retrospective (today) → ② Nightly refresh → ③ Live ASTraM feed. *Uses only data BTP already collects.*
-- **Visual:** 3-phase arrow timeline.
-- **Say:** "The impact: the visibility the brief says is missing, prioritized zones, proactive scheduling, offender targeting — using only data BTP already has. It runs today on historical exports, scales to a nightly refresh, and ultimately a live ASTraM feed."
-
-## SLIDE 11 — Why ParkPulse wins
-- **On slide:** **Feasible** — works today, on a laptop. **Innovative** — a decision engine, not a chart. **Explainable** — every score justifiable. **Scalable** — geohash engine; any city, any violation type. **Honest** — credible with BTP.
-- **Visual:** Five checkmarks (mirrors the judging criteria).
-- **Say:** "It's feasible — running now. Innovative — it outputs a decision, not a chart. Explainable — every number can be justified to a citizen or a court. Scalable — the engine is city-agnostic. And honest about its data. That's ParkPulse."
-
-## SLIDE 12 — Close
-- **On slide:** **ParkPulse** — turning *"what already happened"* into *"where to stand tomorrow."* · https://flipkart-gridlock-20-r2-rinxb9yibzp8knp6quhfew.streamlit.app · [Team Name] · Thank you.
-- **Visual:** Logo + live demo URL + Bengaluru map backdrop.
-- **Say:** "ParkPulse turns 298,000 rows of what already happened into where to stand tomorrow. Thank you — we'd love to put this in front of Bengaluru Traffic Police."
+- **Live demo:** https://flipkart-gridlock-20-r2-rinxb9yibzp8knp6quhfew.streamlit.app
+- **Length:** ~5 min spoken (13 slides). For a 3-min cut, present slides 1, 3, 5, 8, 9, 10, 13.
+- **Numbers that must be exact:** 298,445 records · r = 0.70 (MAE 2.01) · **38% vs 1.3%** on 31 held-out days ·
+  top 1% of cells = 33% · 15% of vehicles = 34% · 93% before 1 PM / <0.3% in the 5–9 PM peak.
 
 ---
 
-### Design notes
-- **Palette:** dark slate background, blue `#4C8BF5` accent, amber→red for "impact/severity" — matches the app, so screenshots blend in.
-- **One idea per slide.** Let the screenshots carry the weight; keep text to the bullets above.
-- **Screenshots to capture** (from the running app): Command Center hex map · Hotspot Explorer (filtered) · Forecast & Patrol plan · Repeat-Offender chart.
-- **Order = the loop.** Slides 6→9 walk Detect→Score→Forecast→Deploy→Target in the same order as the demo, so the deck and the video reinforce each other.
+## Slide 1 — Title / Hook
+**On slide:**
+- **ParkPulse**
+- *From 298,000 parking tickets to where to stand tomorrow.*
+- Theme 1 · Gridlock Hackathon 2.0 · [Team Name]
+
+**SAY:** "Illegal parking is one of Bengaluru's most visible, most complained-about congestion sources — and today
+the Traffic Police fight it almost blind. We turned 298,000 of their *own* parking tickets into a system that tells
+them exactly where to stand tomorrow. This is ParkPulse."
+
+**VISUAL:** The Command Center 3-D hotspot map (let it rotate/tilt). Title overlaid.
+
+---
+
+## Slide 2 — The problem *(Relevance)*
+**On slide:**
+- Illegal parking near markets, metros & commercial hubs blocks live lanes and junctions.
+- Enforcement is **reactive & patrol-based** — officers go on instinct.
+- **No heatmap · no prioritization · no way to schedule scarce teams.**
+
+**SAY:** "A duty officer has a handful of teams and a whole division. Where do they send them? Right now that's
+experience and gut feel. There's no city-wide picture of *which* parking actually hurts traffic, or *when*."
+
+**VISUAL:** A photo of a choked Bengaluru junction beside a blank map (the "blindness").
+
+---
+
+## Slide 3 — The data *(Feasibility + credibility)*
+**On slide:**
+- **298,445** real BTP violation records · 150 days · **0 missing fields**.
+- Top **1%** of locations hold **33%** of all violations.
+- **15%** of vehicles cause **34%** of them.
+
+**SAY:** "We didn't invent data — this is the Traffic Police's own challan record, cleaned. And it's rich: violations
+are wildly concentrated, and a small set of repeat vehicles drive a third of everything. That concentration is the
+opportunity."
+
+**VISUAL:** Three big stat tiles; a Pareto curve (1% → 33%).
+
+---
+
+## Slide 4 — The honest insight *(this is what earns the judges' trust)*
+**On slide:**
+- This is **enforcement data, not demand** — it shows where officers *caught* parking.
+- **~93%** of tickets are written **before 1 PM**; **<0.3%** in the **5–9 PM** evening peak.
+- So we optimize **enforcement efficiency** and **flag the evening blind spot** — we never over-claim.
+
+**SAY:** "Here's the part most teams will skip. This data is morning-heavy — it's when officers are out writing
+tickets, not when parking is worst. We say that out loud, because *you* made this data and you know its limits. We
+make your existing effort sharper, and we point at the gap you're missing — instead of pretending we predict the
+whole city."
+
+**VISUAL:** The coverage-by-hour bar chart with the evening hours highlighted in red.
+
+---
+
+## Slide 5 — The solution: a closed decision loop *(Innovation)*
+**On slide:**
+- **Detect → Score → Forecast → Deploy → Target.**
+- Not a dashboard. A loop that ends in an **action a supervisor can brief tomorrow.**
+
+**SAY:** "ParkPulse isn't another dashboard you stare at. It's a loop: we detect the hotspots, score them by real
+traffic impact, forecast when they recur, generate a patrol plan, and target repeat offenders — and the outcomes
+feed back in."
+
+**VISUAL:** The five-stage loop diagram (circular, arrow returning to Detect).
+
+---
+
+## Slide 6 — Detect & Score
+**On slide:**
+- City-wide **3-D hotspot map** (geohash hexbins).
+- **Congestion Impact Score 0–100** = violations × severity × flow-criticality.
+- One transparent number ranks every zone — junction-blocking & main-road violations weigh most.
+
+**SAY:** "Not all violations hurt equally — 100 cars on a footpath isn't 100 cars blocking a main-road junction. So we
+combine *how many*, *how bad*, and *how flow-critical* into one explainable 0–100 score per zone."
+
+**VISUAL:** Command Center map + the "Top impact zones" list. Add the **legend** (blue→red = low→high, taller = more).
+
+---
+
+## Slide 7 — Forecast — validated honestly *(Innovation + credibility)*
+**On slide:**
+- Predicts violations per **zone × weekday × hour**.
+- **Honest held-out backtest: r = 0.70, MAE 2.01** — trained on the past, tested on the *unseen future*.
+- Benchmarked a LightGBM model — it scored **lower (0.69)** → we kept the **interpretable** one.
+
+**SAY:** "We forecast load for every zone, weekday and hour. And we validate it the hard way — trained on early
+weeks, tested on weeks the model never saw: correlation 0.70. Real signal, not an overfit 0.99. We even tried a
+gradient-boosting model; it did *worse*, so we kept the one we can explain to a judge in one line."
+
+**VISUAL:** Forecast & Patrol page; the "Forecast accuracy r = 0.70" KPI.
+
+---
+
+## Slide 8 — Proven impact, not a claim ⭐ *(Real-world impact — the mic-drop)*
+**On slide:**
+- We replayed a **10-team plan on 31 days the model never saw.**
+- It would have been positioned for **~38%** of the violations *actually* logged — vs **~1.3%** spread evenly.
+- A **validated** efficiency gain, not a projection.
+
+**SAY:** *(slow down, let it land)* "So — does it actually work? We ran a counterfactual. We took 31 held-out days,
+and for each one asked: where would ParkPulse have sent ten teams? Those ten teams would have been sitting on
+**thirty-eight percent** of the violations that actually happened that day. Spread evenly, you'd cover one-point-three.
+That's not a promise. That's tested on data it had never seen."
+
+**VISUAL:** The Coverage & ROI "Proven impact" card — the 38% vs 1.3% bars.
+
+---
+
+## Slide 9 — Deploy & Target *(Real-world impact)*
+**On slide:**
+- One click → a **spaced patrol plan + CSV** a supervisor briefs at morning roll-call.
+- **Repeat-offender target lists** (15% → 34%): owner-notice / escalated-penalty / tow-priority CSV.
+
+**SAY:** "This is the deliverable an officer actually uses. Pick the shift and the number of teams — ParkPulse places
+each team on the highest-impact, well-spaced corners and exports a CSV. And it hands you the chronic repeat
+offenders as a ready target list for notices and tow priority."
+
+**VISUAL:** Generate a plan live (map pins + table) → click Download CSV. Then the offender CSV buttons.
+
+---
+
+## Slide 10 — Ask ParkPulse: the AI co-pilot *(Innovation)*
+**On slide:**
+- A true **AI agent** — Google **Gemini function-calling over the real models** (not a scripted chatbot).
+- **Multilingual** (English / Hindi / Kannada) + **voice input** + **conversation memory**.
+- An officer just **asks** — or **says** — *"Plan 6 teams for Friday evening near KR Market."*
+
+**SAY:** "And you don't need to learn the dashboard. Any officer can just ask — by text or by voice, in English,
+Hindi or Kannada — and the co-pilot runs the *actual* forecaster and optimizer and answers with a real plan and map.
+It remembers the conversation. This is an agent over our models, not a chatbot."
+
+**VISUAL:** The Ask page — type or speak a query → plan + map render. Show the conversation history rail.
+
+---
+
+## Slide 11 — It gets better every day *(the data flywheel — long-term vision)*
+**On slide:**
+- Every new challan **sharpens** the forecast — a **nightly refresh**, no heavy retraining.
+- The evening blind spot is **self-healing**: deploy a few evening teams → new data → the model learns the true
+  evening pattern → next plan is better. **A compounding loop.**
+- Roadmap: **Retrospective (today) → Nightly refresh → Live ASTraM / camera feed.**
+
+**SAY:** "And it compounds. The forecaster is a fast, transparent model rebuilt from the raw challans in seconds — so
+every night's new tickets make it sharper, automatically. Even better: the moment you deploy in the evenings,
+*those evenings start generating data* — the blind spot fills itself, and the model learns what it couldn't see
+before. Tomorrow we fuse live traffic and camera feeds to replace our impact *proxy* with real measurement. It
+gets smarter the more you use it — on data you already collect, running on a laptop."
+
+**VISUAL:** A simple flywheel diagram: Deploy → New data → Sharper forecast → Better deploy (loop).
+
+---
+
+## Slide 12 — Feasibility & rollout
+**On slide:**
+- Runs on a **laptop** · uses **only data BTP already collects** · **no new sensors**.
+- Two deployable apps share one brain: a live Streamlit demo + a polished full-stack product.
+- **Geohash engine generalizes** to any city or violation type.
+
+**SAY:** "This is deployable now. No new hardware, no procurement — just the data you already have. It's live today
+as a web app, and the engine isn't parking-specific: the same approach scales to any city, any violation type."
+
+**VISUAL:** Architecture one-liner: Data → core.py (one brain) → Streamlit + FastAPI/Next.js.
+
+---
+
+## Slide 13 — Why ParkPulse wins / Close
+**On slide:**
+- **Feasible** — working software today. **Relevant** — your data, your problem, read honestly.
+- **Innovative** — a decision loop + an agentic voice co-pilot + a validated counterfactual.
+- **Real impact** — a plan you brief tomorrow, a **38%** proven efficiency gain, offender targeting.
+- *Turning what already happened into where to stand tomorrow.*
+
+**SAY:** "Feasible, relevant, innovative, and proven to make a real difference. ParkPulse turns 298,000 rows of what
+already happened into where to stand tomorrow. Thank you."
+
+**VISUAL:** Title card again + live demo URL + repo. Confident hold on the last frame.
+
+---
+
+## Anticipated judge questions (have these ready)
+- **"Isn't this just enforcement data, not real demand?"** → "Exactly — and we say so. We optimize the effort you
+  already spend and flag the evening gap. As you deploy there, the data fills in and the model learns true demand.
+  That honesty is why our numbers are believable."
+- **"How do you know it works?"** → "The 38% counterfactual on 31 days the model never saw. Not a claim — a test."
+- **"Why not deep learning / a fancier model?"** → "We tried; LightGBM scored lower (0.69 vs 0.70) and we couldn't
+  explain it to you. An interpretable model you trust beats a black box that's marginally worse."
+- **"Will it scale / need new sensors?"** → "No new hardware. Geohash engine, runs on a laptop, any city."
+- **"What's the very next step for BTP?"** → "A nightly challan feed + a few evening pilot deployments to start the
+  flywheel; then fuse the live ASTraM feed."

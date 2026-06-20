@@ -80,16 +80,15 @@
 ---
 
 ## Slide 6 — Proposed Solution, Part 2: Architecture & Tech Stack  *(Technical)*
-**Two front-ends, one brain — small, fast, auditable, no GPU.**
+**One engine, two services — small, fast, auditable, no GPU.**
 - **One engine** (`core.py`, pure pandas/numpy): the impact score, the EB-shrinkage forecaster, the spaced greedy
   optimizer, an honest time-split backtest, and a counterfactual deployment simulator.
-- **Two apps share that brain:**
-  - a live **Streamlit** demo, and
-  - a full-stack product — **FastAPI** API (Render) + **Next.js 16 / React 19 / deck.gl** UI (Vercel).
+- **The product:** a **Next.js 16 / React 19 / deck.gl** frontend on **Vercel**, talking to a **FastAPI** backend on
+  **Render** — both calling the one engine.
 - **AI co-pilot:** **Google Gemini** *automatic function-calling* runs the real tools server-side; the key never leaves
   the server. No training pipeline, no IoT hardware, no black box — the whole model rebuilds in seconds.
 
-**On screen:** data-flow diagram — Data → core.py (one brain) → Streamlit + FastAPI/Next.js + Gemini co-pilot.
+**On screen:** data-flow diagram — Data → core.py (one brain) → FastAPI (Render) → Next.js (Vercel) + Gemini co-pilot.
 
 ---
 
@@ -140,8 +139,8 @@
 
 ## Slide 10 — Supporting Links & Documentation  *(Completeness)*
 **Everything to verify it runs — code, demo, instructions.**
-- **Live demo (Streamlit):** https://flipkart-gridlock-20-r2-rinxb9yibzp8knp6quhfew.streamlit.app
-- **Full-stack web app:** `[Vercel URL]`  ·  **API:** `[Render URL]/health`
+- **Live web app (Next.js · Vercel):** `[Vercel URL]`
+- **Backend API (FastAPI · Render):** `[Render URL]/health`
 - **Code repository:** `[GitHub repo URL]`
 - **Demo video:** `[link — short walkthrough; no length limit this year, ~3–5 min recommended]`
 - **Run it yourself (full-stack):**

@@ -108,9 +108,9 @@ content_slide("Slide 5 · Proposed Solution, Part 1 — The Concept", "Not a das
     "Forecaster: empirical-Bayes shrinkage of violations per zone × weekday × hour (sparse cells stay stable).",
     "Optimizer: greedy maximum-coverage with a ≥600 m spacing constraint. Every stage is explainable — no black box."])
 # 6 — Solution Part 2: Architecture & Tech Stack
-content_slide("Slide 6 · Proposed Solution, Part 2 — Architecture & Tech Stack", "Two front-ends, one brain — small, fast, auditable", [
+content_slide("Slide 6 · Proposed Solution, Part 2 — Architecture & Tech Stack", "One engine, two services — small, fast, auditable", [
     "One engine (core.py, pandas/numpy): impact score, EB-shrinkage forecaster, spaced optimizer, honest backtest, simulator.",
-    "Two apps share it: a live Streamlit demo + a full-stack FastAPI (Render) & Next.js 16 / React 19 / deck.gl (Vercel) product.",
+    "The product: a Next.js 16 / React 19 / deck.gl frontend on Vercel + a FastAPI backend on Render — both call the one engine.",
     "AI co-pilot: Google Gemini automatic function-calling runs the real tools server-side (key never leaves the server).",
     "No GPU, no training pipeline, no IoT hardware — the whole model rebuilds in seconds."])
 # 7 — Solution Part 3: Implementation
@@ -133,8 +133,8 @@ content_slide("Slide 9 · Feasibility, Rollout & Integrity", "Deployable today �
     "Roadmap: ① Retrospective (today) → ② Nightly challan feed + evening pilots → ③ Fuse the live ASTraM / camera feed."])
 # 10 — Supporting Links & Documentation
 content_slide("Slide 10 · Supporting Links & Documentation", "Everything to verify it runs", [
-    "Live demo (Streamlit): flipkart-gridlock-20-r2-rinxb9yibzp8knp6quhfew.streamlit.app",
-    "Full-stack web app: [Vercel URL]   ·   API health: [Render URL]/health",
+    "Live web app (Next.js on Vercel): [Vercel URL]",
+    "Backend API (FastAPI on Render): [Render URL]/health",
     "Code repository: [GitHub repo URL]   ·   Demo video: [link — ~3–5 min walkthrough]",
     "Run locally: python fullstack/backend/main.py  ·  cd fullstack/frontend && npm install && npm run dev",
     "Team: TeamX — Shubham, Satyam, Palash.  ParkPulse: turning what already happened into where to stand tomorrow."])

@@ -93,9 +93,9 @@ Theme 1 — Poor Visibility on Parking-Induced Congestion · Gridlock Hackathon 
 
 ---
 
-# Architecture & tech — two front-ends, one brain  ·  Technical
+# Architecture & tech — one engine, two services  ·  Technical
 - **One engine** (`core.py`, pandas/numpy): EB-shrinkage forecaster · impact score · spaced greedy optimizer · honest backtest · counterfactual simulator.
-- **Two apps share it:** a live **Streamlit** demo + a full-stack **FastAPI** (Render) & **Next.js 16 / React 19 / deck.gl** (Vercel) product.
+- **The product:** a **Next.js 16 / React 19 / deck.gl** frontend on **Vercel** + a **FastAPI** backend on **Render** — both call the one engine.
 - **Gemini co-pilot** runs server-side over the real models — **no GPU, no training pipeline, no black box.**
 
 ---
@@ -117,5 +117,5 @@ Theme 1 — Poor Visibility on Parking-Induced Congestion · Gridlock Hackathon 
 
 # ParkPulse
 ### Turning "what already happened" into "where to stand tomorrow."
-Live demo: https://flipkart-gridlock-20-r2-rinxb9yibzp8knp6quhfew.streamlit.app
+Live app (Next.js · Vercel) + API (FastAPI · Render): [Vercel URL]
 TeamX · Thank you

@@ -142,9 +142,9 @@ content_slide("By design · Integrity", "Live, explainable & self-improving", [
     "Data flywheel: a live ingest endpoint cleans new challans + rebuilds models in seconds; officers log real outcomes.",
     "Integrity: we never modify the fixed dataset — ingest is live-data architecture, outcome logs in-memory only."])
 # 12
-content_slide("Architecture & tech · Technical", "Two front-ends, one brain — small, fast, explainable", [
+content_slide("Architecture & tech · Technical", "One engine, two services — small, fast, explainable", [
     "One engine (core.py, pandas/numpy): EB-shrinkage forecaster · impact score · spaced greedy optimizer · honest backtest · simulator.",
-    "Two apps share it: a live Streamlit demo + full-stack FastAPI (Render) & Next.js 16 / React 19 / deck.gl (Vercel).",
+    "The product: Next.js 16 / React 19 / deck.gl frontend (Vercel) + FastAPI backend (Render) — both call the one engine.",
     "Gemini co-pilot runs server-side over the real models — no GPU, no training pipeline to babysit, no black box."])
 # 13
 content_slide("Feasibility · rollout", "Deployable today — on data BTP already collects", [
@@ -159,7 +159,7 @@ content_slide("Close", "Why ParkPulse wins", [
     "Innovative — a closed decision loop + an agentic voice co-pilot + transparency both ways.",
     "Real impact — a plan you brief tomorrow, a 38% validated efficiency gain, offender targeting.",
     "Turning what already happened into where to stand tomorrow."],
-    footer="Live demo: flipkart-gridlock-20-r2-rinxb9yibzp8knp6quhfew.streamlit.app")
+    footer="Live app: Next.js on Vercel + FastAPI on Render  ·  [Vercel URL]")
 
 out = Path(__file__).resolve().parent / "ParkPulse_Deck.pptx"
 prs.save(str(out))

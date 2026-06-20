@@ -116,13 +116,13 @@ VISUAL: >> ADD DIAGRAM: pitch/diagrams/parkpulse_decision_loop_light.png (the 5-
 ==============================================================================
 SLIDE 6 — ARCHITECTURE & TECH STACK
 ==============================================================================
-HEADLINE: Two front-ends, one brain — small, fast, auditable, no GPU.
+HEADLINE: One engine, two services — small, fast, auditable, no GPU.
 
 - One engine (core.py, pure pandas/numpy): the impact score, the EB-shrinkage
   forecaster, the spaced greedy optimizer, an honest time-split backtest, and a
   counterfactual deployment simulator.
-- Two apps share that brain: a live Streamlit demo, and a full-stack product —
-  FastAPI API (Render) + Next.js 16 / React 19 / deck.gl UI (Vercel).
+- The product: a Next.js 16 / React 19 / deck.gl frontend on Vercel + a FastAPI
+  backend on Render — both call the one engine.
 - AI co-pilot: Google Gemini automatic function-calling runs the real tools
   server-side (the key never leaves the server).
 - No GPU, no training pipeline, no IoT hardware — the whole model rebuilds in
@@ -193,8 +193,8 @@ SLIDE 10 — SUPPORTING LINKS, RUN INSTRUCTIONS & CLOSE
 ==============================================================================
 HEADLINE: Everything to verify it runs — and the one-line vision.
 
-- Live demo (Streamlit): https://flipkart-gridlock-20-r2-rinxb9yibzp8knp6quhfew.streamlit.app
-- Full-stack web app: [Vercel URL]   ·   API health: [Render URL]/health
+- Live web app (Next.js on Vercel): [Vercel URL]
+- Backend API (FastAPI on Render): [Render URL]/health
 - Code repository: [GitHub repo URL]   ·   Demo video: [link — ~3–5 min walkthrough]
 - Run locally: python fullstack/backend/main.py  ·  cd fullstack/frontend && npm install && npm run dev
 - Team: TeamX — Shubham, Satyam, Palash

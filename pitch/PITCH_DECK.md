@@ -7,8 +7,8 @@
 > conclusion, the bullets carry the full point, and one "On screen" line names the proof. Each slide is tagged with the
 > **judging criterion** it earns (Feasibility · Relevance · Innovation · Real-world impact · plus Technical & Design).
 
-- **Live demo (Streamlit):** https://flipkart-gridlock-20-r2-rinxb9yibzp8knp6quhfew.streamlit.app
-- **Full-stack product:** FastAPI (Render) + Next.js/React/deck.gl (Vercel) — same engine, polished UI + AI co-pilot.
+- **Live web app:** Next.js / React / deck.gl on **Vercel** (frontend) + **FastAPI** on **Render** (backend): `[Vercel URL]`.
+- **One engine:** both call the shared `app/core.py`; the Gemini co-pilot runs server-side.
 - **Generated PPTX:** `pitch/ParkPulse_Deck.pptx` (regenerate via `python pitch/build_pptx.py`).
 - **Numbers that must stay exact:** 298,445 records · 151 days · 802 zones · r = 0.70 (MAE 2.01) ·
   **38% vs 1.3%** on 31 held-out days · top 1% of cells = 33% · 15% of vehicles = 34% · 93% before 1 PM / <0.3% in the 5–9 PM peak.
@@ -152,14 +152,14 @@
 ---
 
 ## Slide 12 — Architecture & tech  *(Technical)*
-**Two front-ends, one brain — small, fast, explainable.**
+**One engine, two services — small, fast, explainable.**
 - **One engine** (`core.py`, pure pandas/numpy): EB-shrinkage forecaster · transparent impact score · greedy
   maximum-coverage optimizer with a minimum-spacing constraint · honest time-split backtest · counterfactual simulator.
-- **Two apps share it:** a live **Streamlit** demo, and a full-stack product — **FastAPI** API (Render) + **Next.js 16 /
-  React 19 / deck.gl** UI (Vercel) — plus the **Gemini** co-pilot, server-side.
+- **The product:** a **Next.js 16 / React 19 / deck.gl** frontend (Vercel) + a **FastAPI** backend (Render) — both
+  calling the one engine — plus the **Gemini** co-pilot, server-side.
 - **No training pipeline to babysit, no GPU, no black box** — the whole model is auditable and rebuilds in seconds.
 
-**On screen:** one-line architecture: Data → core.py (one brain) → Streamlit + FastAPI/Next.js + Gemini co-pilot.
+**On screen:** one-line architecture: Data → core.py (one brain) → FastAPI (Render) → Next.js (Vercel) + Gemini co-pilot.
 
 ---
 

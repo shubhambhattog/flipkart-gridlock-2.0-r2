@@ -13,6 +13,10 @@ Two services. **Deploy the backend first**, copy its URL, then deploy the fronte
 
 ## Part A — Backend → Render
 
+> **One-click option:** the repo ships a `render.yaml` blueprint. In Render, choose **New → Blueprint**, pick this
+> repo, and it provisions the service with every field below pre-filled — you only add the `GEMINI_API_KEY` secret.
+> Prefer manual setup? Follow the numbered steps:
+
 1. **Render → New → Web Service** → connect your GitHub repo.
 2. Configure:
    | Setting | Value |

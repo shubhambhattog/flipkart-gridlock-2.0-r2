@@ -23,6 +23,31 @@ const ZoneMap = dynamic(() => import("@/components/ZoneMap"), {
 const clampHour = (n: number) => Math.max(0, Math.min(23, Math.round(n)));
 const fmt = (n: number) => n.toLocaleString("en-IN");
 
+/** Pilot feedback loop: after a shift, an officer logs what the team actually found → feeds the model. */
+function OutcomeLogger({ d, weekday, window }: { d: Deployment; weekday: string; window: string }) {
+  const [val, setVal] = useState("");
+  const [logged, setLogged] = useState(false);
+  async function log() {
+    const found = parseInt(val, 10);
+    if (isNaN(found) || found < 0) return;
+    try {
+      await api.outcome({ team: d.team, zone: d.label, gh6: d.gh6, weekday, window, found });
+      setLogged(true);
+    } catch { /* ignore */ }
+  }
+  if (logged) return <span className="text-[11px] font-medium text-primary">✓ Logged {val} found — feeds the model</span>;
+  return (
+    <div className="flex items-center gap-2">
+      <span className="text-[11px] text-muted-foreground">After the shift, log what was found:</span>
+      <Input value={val} onChange={(e) => setVal(e.target.value.replace(/[^0-9]/g, ""))}
+        placeholder="N" inputMode="numeric" className="h-7 w-16 text-xs" />
+      <Button variant="outline" size="sm" className="h-7 px-2 text-[11px]" onClick={log} disabled={!val}>
+        Log outcome
+      </Button>
+    </div>
+  );
+}
+
 export default function ForecastPage() {
   const [zones, setZones] = useState<Zone[] | null>(null);
   const [zonesErr, setZonesErr] = useState(false);
@@ -286,11 +311,26 @@ export default function ForecastPage() {
                                 Most common: <span className="font-medium text-foreground">{d.top_violation}</span>
                                 {d.avg_severity != null && <> · avg severity {Number(d.avg_severity).toFixed(2)}</>}.
                               </li>
+                              {d.trend && (
+                                <li>
+                                  Recent trend:{" "}
+                                  <span className={cn("font-medium",
+                                    d.trend === "up" ? "text-destructive" : d.trend === "down" ? "text-primary" : "text-foreground")}>
+                                    {d.trend === "up" ? `▲ rising ${Math.abs(d.trend_pct ?? 0)}%`
+                                      : d.trend === "down" ? `▼ easing ${Math.abs(d.trend_pct ?? 0)}%` : "steady"}
+                                  </span>{" "}
+                                  vs the prior 3 weeks.
+                                </li>
+                              )}
                             </ul>
-                            <Button variant="ghost" size="sm" className="h-7 gap-1 px-2 text-[11px]"
-                              onClick={(e) => { e.stopPropagation(); shareTeam(d); }}>
-                              <MessageCircle className="h-3 w-3" /> Share this team to WhatsApp
-                            </Button>
+                            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-0.5"
+                              onClick={(e) => e.stopPropagation()}>
+                              <Button variant="ghost" size="sm" className="h-7 gap-1 px-2 text-[11px]"
+                                onClick={() => shareTeam(d)}>
+                                <MessageCircle className="h-3 w-3" /> Share to WhatsApp
+                              </Button>
+                              <OutcomeLogger d={d} weekday={DOW[dow]} window={resp?.window ?? ""} />
+                            </div>
                           </div>
                         </TableCell>
                       </TableRow>

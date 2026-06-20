@@ -13,6 +13,7 @@ const NAV = [
   { href: "/", label: "Command Center" },
   { href: "/explorer", label: "Hotspot Explorer" },
   { href: "/forecast", label: "Forecast & Patrol" },
+  { href: "/day", label: "Full-day Planner" },
   { href: "/coverage", label: "Coverage & ROI" },
   { href: "/offenders", label: "Repeat Offenders" },
   { href: "/ask", label: "Ask ParkPulse" },

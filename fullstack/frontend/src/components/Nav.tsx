@@ -1,13 +1,14 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, MapPinned, Siren, Target, RotateCcw, Bot } from "lucide-react";
+import { LayoutDashboard, MapPinned, Siren, Target, RotateCcw, Bot, CalendarClock } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const LINKS = [
   { href: "/", label: "Command Center", icon: LayoutDashboard },
   { href: "/explorer", label: "Hotspot Explorer", icon: MapPinned },
   { href: "/forecast", label: "Forecast & Patrol", icon: Siren },
+  { href: "/day", label: "Full-day Planner", icon: CalendarClock },
   { href: "/coverage", label: "Coverage & ROI", icon: Target },
   { href: "/offenders", label: "Repeat Offenders", icon: RotateCcw },
   { href: "/ask", label: "Ask ParkPulse", icon: Bot },

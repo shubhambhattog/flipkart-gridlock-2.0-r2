@@ -32,6 +32,10 @@ export type Deployment = {
   team: string; gh6: string; lat: number; lon: number; label: string;
   pred_load: number; impact_score: number; avg_severity: number; top_violation: string;
   junction_frac?: number; main_road_frac?: number; // rationale for the "Why here?" popover
+  trend?: "up" | "down" | "flat"; trend_pct?: number; // recent-trend explainability
+};
+export type Anomaly = {
+  date: string; weekday: string; violations: number; expected: number; z: number; pct_above: number;
 };
 export type Meta = {
   totals: { violations: number; zones: number; days: number; junctions: number };
@@ -78,6 +82,10 @@ export const api = {
   refresh: () => post<{ status: string; violations: number; backtest: Meta["backtest"] }>("/refresh", {}),
   ingest: (records: Record<string, unknown>[], persist = true) =>
     post<{ status: string; added: number; violations: number }>("/ingest", { records, persist }),
+  anomalies: () => get<{ anomalies: Anomaly[] }>("/anomalies"),
+  outcome: (o: { team: string; zone: string; gh6: string; weekday: string; window: string; found: number }) =>
+    post<{ status: string; total: number }>("/outcome", o),
+  outcomes: () => get<{ outcomes: unknown[]; total: number; total_found: number }>("/outcomes"),
 };
 
 // blue → amber → red ramp for an impact score (0–100)

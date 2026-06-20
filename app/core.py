@@ -24,6 +24,75 @@ def load_clean() -> pd.DataFrame:
 def load_junctions() -> pd.DataFrame:
     return pd.read_pickle(DATA / "junctions.pkl")
 
+# --------------------------------------------------------------------------
+# Incremental ingestion: clean RAW challan records (source-CSV schema) into the
+# analytics schema used by clean.pkl, so new data can be appended without a full re-prep.
+import json as _json, ast as _ast  # noqa: E402
+
+_GH_B32 = "0123456789bcdefghjkmnpqrstuvwxyz"
+_GH_BITS = [16, 8, 4, 2, 1]
+_SEV = {
+    "PARKING IN A MAIN ROAD": 1.00, "OBSTRUCTING TRAFFIC": 1.00,
+    "PARKING NEAR ROAD CROSSING": 0.90, "PARKING AT BUS STOP": 0.90,
+    "PARKING NEAR BUS STOP": 0.90, "DOUBLE PARKING": 0.85, "WRONG PARKING": 0.80,
+    "NO PARKING": 0.60, "PARKING ON FOOTPATH": 0.50, "DEFECTIVE NUMBER PLATE": 0.10,
+}
+_DEFAULT_SEV = 0.55
+_CLEAN_COLS = ["lat", "lon", "gh6", "gh7", "primary_type", "severity", "hour", "dow", "ymd",
+               "police_station", "junction_name", "has_junction", "vehicle_type", "vehicle_number"]
+
+def gh_encode(lat: float, lon: float, prec: int = 7) -> str:
+    """Geohash-encode a coordinate (prec 7 ~153m, 6 ~1.2km) — same scheme as prep.py."""
+    la, lo = [-90.0, 90.0], [-180.0, 180.0]
+    out, bit, ch, even = [], 0, 0, True
+    while len(out) < prec:
+        if even:
+            mid = (lo[0] + lo[1]) / 2
+            if lon >= mid: ch |= _GH_BITS[bit]; lo[0] = mid
+            else:          lo[1] = mid
+        else:
+            mid = (la[0] + la[1]) / 2
+            if lat >= mid: ch |= _GH_BITS[bit]; la[0] = mid
+            else:          la[1] = mid
+        even = not even
+        if bit < 4: bit += 1
+        else:       out.append(_GH_B32[ch]); bit, ch = 0, 0
+    return "".join(out)
+
+def _parse_vt(s):
+    if isinstance(s, list): return s
+    if not isinstance(s, str): return []
+    try: return _json.loads(s)
+    except Exception:
+        try: return _ast.literal_eval(s)
+        except Exception: return [s] if s.strip() else []
+
+def clean_raw(records) -> pd.DataFrame:
+    """Clean a batch of RAW violation records (source-CSV schema) into the clean.pkl analytics schema.
+       Required raw fields: latitude, longitude, created_datetime, violation_type. Optional:
+       police_station, junction_name, vehicle_type, vehicle_number. Returns rows that pass cleaning."""
+    raw = pd.DataFrame(list(records))
+    if raw.empty or not {"latitude", "longitude", "created_datetime"}.issubset(raw.columns):
+        return pd.DataFrame(columns=_CLEAN_COLS)
+    vt = raw.get("violation_type", pd.Series([[]] * len(raw), index=raw.index)).map(_parse_vt)
+    raw["severity"] = vt.map(lambda L: max((_SEV.get(t, _DEFAULT_SEV) for t in L), default=_DEFAULT_SEV))
+    raw["primary_type"] = vt.map(lambda L: max(L, key=lambda t: _SEV.get(t, _DEFAULT_SEV)) if L else "UNKNOWN")
+    ts = pd.to_datetime(raw["created_datetime"], errors="coerce", utc=True)
+    raw["lat"] = pd.to_numeric(raw["latitude"], errors="coerce")
+    raw["lon"] = pd.to_numeric(raw["longitude"], errors="coerce")
+    keep = ts.notna() & raw["lat"].between(12.7, 13.35) & raw["lon"].between(77.3, 77.9)
+    raw, ts = raw[keep].copy(), ts[keep].dt.tz_convert("Asia/Kolkata")
+    if raw.empty:
+        return pd.DataFrame(columns=_CLEAN_COLS)
+    raw["hour"], raw["dow"] = ts.dt.hour.values, ts.dt.dayofweek.values
+    raw["ymd"] = ts.dt.strftime("%Y-%m-%d").values
+    raw["gh7"] = [gh_encode(a, b, 7) for a, b in zip(raw["lat"], raw["lon"])]
+    raw["gh6"] = raw["gh7"].str[:6]
+    for c in ["police_station", "junction_name", "vehicle_type", "vehicle_number"]:
+        raw[c] = (raw[c] if c in raw.columns else pd.Series(["nan"] * len(raw), index=raw.index)).astype(str).str.strip()
+    raw["has_junction"] = (raw["junction_name"] != "No Junction") & (raw["junction_name"].str.lower() != "nan")
+    return raw[_CLEAN_COLS].reset_index(drop=True)
+
 def vehicle_counts(df: pd.DataFrame) -> pd.Series:
     """Violations per vehicle (descending), excluding unrecorded ('nan') plates.
        Single source of truth for repeat-offender stats across pages."""
@@ -127,7 +196,8 @@ def allocate_patrols(zones: pd.DataFrame, pred: pd.DataFrame, k: int = 10,
                      min_sep_m: float = 600.0) -> pd.DataFrame:
     """Greedy deploy K teams to the highest predicted-load zones while keeping
        them at least `min_sep_m` apart (avoid stacking teams on one street)."""
-    cols = ["gh6", "lat", "lon", "label", "impact_score", "avg_severity", "top_violation"]
+    cols = ["gh6", "lat", "lon", "label", "impact_score", "avg_severity",
+            "junction_frac", "main_road_frac", "top_violation"]
     cand = (pred.merge(zones[cols], on="gh6")
             .sort_values("pred_load", ascending=False).reset_index(drop=True))
     chosen = []

@@ -31,6 +31,7 @@ export type Offender = { vehicle: string; violations: number };
 export type Deployment = {
   team: string; gh6: string; lat: number; lon: number; label: string;
   pred_load: number; impact_score: number; avg_severity: number; top_violation: string;
+  junction_frac?: number; main_road_frac?: number; // rationale for the "Why here?" popover
 };
 export type Meta = {
   totals: { violations: number; zones: number; days: number; junctions: number };
@@ -74,6 +75,9 @@ export const api = {
   patrol: (b: PatrolReq) => post<PatrolResp>("/patrol", b),
   copilot: (message: string, history: ChatTurn[] = []) => post<CopilotResp>("/copilot", { message, history }),
   assistant: (message: string, history: ChatTurn[] = []) => post<CopilotResp>("/assistant", { message, history }),
+  refresh: () => post<{ status: string; violations: number; backtest: Meta["backtest"] }>("/refresh", {}),
+  ingest: (records: Record<string, unknown>[], persist = true) =>
+    post<{ status: string; added: number; violations: number }>("/ingest", { records, persist }),
 };
 
 // blue → amber → red ramp for an impact score (0–100)

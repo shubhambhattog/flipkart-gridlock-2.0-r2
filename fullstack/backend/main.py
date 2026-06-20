@@ -53,9 +53,11 @@ def _build_meta(df, zones):
         "dow_names": copilot.DOW,
     }
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    df = core.load_clean()
+DATA_DIR = Path(__file__).resolve().parents[2] / "data"
+
+def _build_state(df):
+    """(Re)compute every derived model from the violations df and store it in STATE.
+       Called at startup and again after /ingest or /refresh — no server restart needed."""
     zones = core.add_impact(core.build_zones(df))
     STATE.update(
         df=df, zones=zones, fc=core.build_forecaster(df),
@@ -63,6 +65,10 @@ async def lifespan(app: FastAPI):
                                     n=("lat", "size")).reset_index()),
         meta=_build_meta(df, zones),
         impact=core.deployment_simulation(df))
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    _build_state(core.load_clean())
     key = os.environ.get("GEMINI_API_KEY")
     if key:
         from google import genai
@@ -166,6 +172,34 @@ def patrol(req: PatrolReq):
     plan = core.allocate_patrols(zsub, pred, k=max(1, req.teams))
     return {"weekday": copilot.DOW[dow], "window": f"{h0:02d}:00-{h1:02d}:59",
             "teams": int(len(plan)), "plan": _records(plan)}
+
+# ---- data flywheel: ingest new challans + rebuild models in place (no restart) ----
+@app.post("/refresh")
+def refresh():
+    """Reload data/clean.pkl from disk and rebuild all models in place. This is the 'nightly drop ->
+       refresh' hook: a job writes a fresh clean.pkl (via prep), then calls this to go live."""
+    _build_state(core.load_clean())
+    return {"status": "refreshed", "violations": int(len(STATE["df"])),
+            "backtest": STATE["meta"]["backtest"]}
+
+class IngestReq(BaseModel):
+    records: list[dict]          # RAW rows: latitude, longitude, created_datetime, violation_type, ...
+    persist: bool = True         # also write to clean.pkl so they survive a restart
+
+@app.post("/ingest")
+def ingest(req: IngestReq):
+    """Append new RAW violation records (source-CSV schema), clean them like prep.py, rebuild the models,
+       and optionally persist to clean.pkl. Makes the 'gets better over time' story literally true."""
+    cleaned = core.clean_raw(req.records)
+    if cleaned.empty:
+        return {"status": "no_valid_records", "added": 0, "violations": int(len(STATE["df"]))}
+    import pandas as pd
+    df = pd.concat([STATE["df"], cleaned], ignore_index=True)
+    if req.persist:
+        df.to_pickle(DATA_DIR / "clean.pkl")
+    _build_state(df)
+    return {"status": "ingested", "added": int(len(cleaned)),
+            "violations": int(len(STATE["df"])), "backtest": STATE["meta"]["backtest"]}
 
 class Turn(BaseModel):
     role: str = "user"          # "user" | "assistant"

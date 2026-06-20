@@ -53,8 +53,10 @@ npm run dev                              # http://localhost:3000
 | GET | `/roi?dow=&start=&end=` | ROI / staffing curve |
 | GET | `/explorer?dows=&h0=&h1=&types=&stations=` | server-side filtered zones |
 | POST | `/patrol` | `{weekday,start_hour,end_hour,teams,area?}` → deployment plan |
-| POST | `/copilot` | `{message}` → `{answer, plan}` (Gemini function-calling over core.py) |
-| POST | `/assistant` | `{message}` → `{answer, plan}` — the guardrailed in-app floating assistant |
+| POST | `/copilot` | `{message, history}` → `{answer, plan}` (Gemini function-calling over core.py, with memory) |
+| POST | `/assistant` | `{message, history}` → `{answer, plan}` — the guardrailed in-app floating assistant |
+| POST | `/ingest` | `{records[], persist}` → cleans new RAW challans, appends, rebuilds models in place |
+| POST | `/refresh` | reload `clean.pkl` from disk + rebuild — the "nightly drop → go live" hook, no restart |
 
 The intelligence behind these endpoints (all in `../app/core.py`): a log-scaled **Congestion Impact Score**, an
 empirical-Bayes shrinkage forecaster (`alpha=12`) of load per zone × weekday × hour — an honest time-split backtest

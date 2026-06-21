@@ -137,17 +137,15 @@
 
 ---
 
-## Slide 10 — Supporting Links & Documentation  *(Completeness)*
-**Everything to verify it runs — code, demo, instructions.**
-- **Live web app (Next.js · Vercel):** `[Vercel URL]`
-- **Backend API (FastAPI · Render):** `[Render URL]/health`
-- **Code repository:** `[GitHub repo URL]`
-- **Demo video:** `[link — short walkthrough; no length limit this year, ~3–5 min recommended]`
-- **Run it yourself (full-stack):**
-  - API — `python fullstack/backend/main.py` (serves `:8000`; set `GEMINI_API_KEY` for the co-pilot)
-  - Web — `cd fullstack/frontend && npm install && npm run dev` (`:3000`, set `NEXT_PUBLIC_API_URL`)
-  - Deploy guide: `fullstack/DEPLOY.md` · page-by-page: `fullstack/PAGES.md`
-- **Team:** `TeamX` — Shubham, Satyam, Palash
-- **Close:** *ParkPulse turns what already happened into where to stand tomorrow — feasible, honest, and proven on unseen data.*
+## Slide 10 — ParkPulse, in summary  *(close)*
+**Feasible. Relevant. Innovative. Proven — the evidence.**
+- **Feasible** — runs today on data BTP already collects; no new sensors or hardware.
+- **Relevant** — built on their own 298,445 records, read honestly (enforcement data, not demand; the evening gap named).
+- **Innovative** — a closed decision loop, explainable both ways, with an agentic voice co-pilot.
+- **Proven** — **38%** of real violations captured on **31 days the model never saw**; held-out r = 0.70.
+- **By the numbers:** 298,445 records · r = 0.70 · 38% vs 1.3% · 802 zones · English / Hindi / Kannada · runs on a laptop.
 
-**On screen:** title card + the live links as scannable QR codes + repo.
+*ParkPulse turns what already happened into where to stand tomorrow.*
+
+**On screen:** the four criteria as evidenced one-liners + a by-the-numbers strip + **one QR to the live app**. *(Title,
+Description, Links, Run Instructions and Source Code are separate submission-form fields — not repeated on the slide.)*

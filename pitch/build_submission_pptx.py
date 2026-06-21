@@ -131,13 +131,14 @@ content_slide("Slide 9 · Feasibility, Rollout & Integrity", "Deployable today �
     "Self-improving: a live ingest endpoint rebuilds models in seconds (in-memory); outcome logging closes the loop.",
     "Integrity: we NEVER modify the fixed competition dataset — ingest is architecture for live data; logs are in-memory only.",
     "Roadmap: ① Retrospective (today) → ② Nightly challan feed + evening pilots → ③ Fuse the live ASTraM / camera feed."])
-# 10 — Supporting Links & Documentation
-content_slide("Slide 10 · Supporting Links & Documentation", "Everything to verify it runs", [
-    "Live web app (Next.js on Vercel): [Vercel URL]",
-    "Backend API (FastAPI on Render): [Render URL]/health",
-    "Code repository: [GitHub repo URL]   ·   Demo video: [link — ~3–5 min walkthrough]",
-    "Run locally: python fullstack/backend/main.py  ·  cd fullstack/frontend && npm install && npm run dev",
-    "Team: TeamX — Shubham, Satyam, Palash.  ParkPulse: turning what already happened into where to stand tomorrow."])
+# 10 — ParkPulse, in summary (links/run/title/desc live in the submission-form fields, not on the slide)
+content_slide("Slide 10 · ParkPulse, in summary", "Feasible. Relevant. Innovative. Proven — the evidence.", [
+    "Feasible — runs today on data BTP already collects; no new sensors or hardware.",
+    "Relevant — built on their own 298,445 records, read honestly (enforcement data, not demand; evening gap named).",
+    "Innovative — a closed decision loop, explainable both ways, with an agentic voice co-pilot.",
+    "Proven — 38% of real violations captured on 31 days the model never saw; held-out r = 0.70.",
+    "By the numbers: 298,445 records · r = 0.70 · 38% vs 1.3% · 802 zones · English / Hindi / Kannada · runs on a laptop."],
+    footer="ParkPulse — turning what already happened into where to stand tomorrow.  ·  Team TeamX (Shubham, Satyam, Palash)  ·  one QR → live app")
 
 out = Path(__file__).resolve().parent / "ParkPulse_Submission_Deck.pptx"
 prs.save(str(out))

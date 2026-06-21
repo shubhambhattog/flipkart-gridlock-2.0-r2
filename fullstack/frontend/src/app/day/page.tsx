@@ -79,7 +79,7 @@ export default function DayPage() {
     const srcTotal = totalCatches(plans[mostKey] ?? null);
     const blindTotal = totalCatches(plans[blindKey] ?? null);
     const top = src[0]?.pred_load ?? 0;
-    const marginal = src.filter((d, i) => i >= 1 && d.pred_load < top * 0.2).length; // clearly low-value tail
+    const marginal = src.filter((d, i) => i >= 1 && d.pred_load < top * 0.5).length; // long-tail teams (< half the top)
     const n = Math.min(marginal, Math.max(1, Math.floor(teams / 3)));
     if (n < 1) return null;
     const cost = src.slice(src.length - n).reduce((s, d) => s + d.pred_load, 0);

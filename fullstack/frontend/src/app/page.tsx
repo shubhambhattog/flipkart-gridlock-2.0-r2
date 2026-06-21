@@ -69,8 +69,8 @@ export default function Home() {
             filter: "blur(14px)",
           }}
         />
-        <div className="pointer-events-none absolute bottom-28 left-8 max-w-2xl">
-          <h1 className="text-4xl font-bold leading-[1.15]" style={{ textShadow: "0 2px 26px rgba(0,0,0,0.9)" }}>
+        <div className="pointer-events-none absolute bottom-24 left-5 right-5 max-w-2xl md:bottom-28 md:left-8 md:right-auto">
+          <h1 className="text-3xl font-bold leading-[1.15] md:text-4xl" style={{ textShadow: "0 2px 26px rgba(0,0,0,0.9)" }}>
             Turning <span className="text-[var(--primary)]">298,000</span> parking tickets into{" "}
             <span className="text-[var(--primary)]">where to stand tomorrow.</span>
           </h1>

@@ -1,7 +1,8 @@
 "use client";
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, MapPinned, Siren, Target, RotateCcw, Bot, CalendarClock } from "lucide-react";
+import { LayoutDashboard, MapPinned, Siren, Target, RotateCcw, Bot, CalendarClock, Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const LINKS = [
@@ -14,19 +15,23 @@ const LINKS = [
   { href: "/ask", label: "Ask ParkPulse", icon: Bot },
 ];
 
-export default function Nav() {
-  const path = usePathname();
+function Brand() {
   return (
-    <nav className="flex h-full w-60 shrink-0 flex-col gap-0.5 border-r border-border bg-sidebar p-3">
-      <div className="mb-5 flex items-center gap-2.5 px-2 py-1">
-        <div className="grid h-8 w-8 place-items-center rounded-lg bg-primary/15 text-primary">
-          <Siren className="h-4 w-4" />
-        </div>
-        <div>
-          <div className="text-sm font-semibold leading-tight">ParkPulse</div>
-          <div className="text-[11px] text-muted-foreground">Enforcement Intelligence</div>
-        </div>
+    <div className="flex items-center gap-2.5">
+      <div className="grid h-8 w-8 place-items-center rounded-lg bg-primary/15 text-primary">
+        <Siren className="h-4 w-4" />
       </div>
+      <div>
+        <div className="text-sm font-semibold leading-tight">ParkPulse</div>
+        <div className="text-[11px] text-muted-foreground">Enforcement Intelligence</div>
+      </div>
+    </div>
+  );
+}
+
+function NavLinks({ path, onNavigate }: { path: string; onNavigate?: () => void }) {
+  return (
+    <>
       {LINKS.map((l) => {
         const active = path === l.href;
         const Icon = l.icon;
@@ -34,6 +39,7 @@ export default function Nav() {
           <Link
             key={l.href}
             href={l.href}
+            onClick={onNavigate}
             className={cn(
               "flex items-center gap-2.5 rounded-md px-3 py-2 text-sm transition-colors",
               active
@@ -46,11 +52,65 @@ export default function Nav() {
           </Link>
         );
       })}
-      <div className="mt-auto px-3 pt-4 text-[10px] leading-relaxed text-muted-foreground/70">
-        Gridlock Hackathon 2.0
-        <br />
-        Bengaluru Traffic Police
-      </div>
-    </nav>
+    </>
+  );
+}
+
+const FOOTER = (
+  <div className="mt-auto px-3 pt-4 text-[10px] leading-relaxed text-muted-foreground/70">
+    Gridlock Hackathon 2.0
+    <br />
+    Bengaluru Traffic Police
+  </div>
+);
+
+export default function Nav() {
+  const path = usePathname();
+  const [open, setOpen] = useState(false);
+
+  return (
+    <>
+      {/* mobile top bar (hidden on md+) */}
+      <header className="flex shrink-0 items-center gap-3 border-b border-border bg-sidebar px-4 py-2.5 md:hidden">
+        <button
+          onClick={() => setOpen(true)}
+          aria-label="Open menu"
+          className="grid h-9 w-9 cursor-pointer place-items-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground"
+        >
+          <Menu className="h-5 w-5" />
+        </button>
+        <Brand />
+      </header>
+
+      {/* desktop sidebar — unchanged at md+ */}
+      <nav className="hidden h-full w-60 shrink-0 flex-col gap-0.5 border-r border-border bg-sidebar p-3 md:flex">
+        <div className="mb-5 px-2 py-1">
+          <Brand />
+        </div>
+        <NavLinks path={path} />
+        {FOOTER}
+      </nav>
+
+      {/* mobile slide-in drawer */}
+      {open && (
+        <div className="fixed inset-0 z-[60] md:hidden">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setOpen(false)} />
+          <nav className="absolute left-0 top-0 flex h-full w-64 max-w-[80vw] flex-col gap-0.5 border-r border-border bg-sidebar p-3">
+            <div className="mb-3 flex items-center justify-between px-2 py-1">
+              <Brand />
+              <button
+                onClick={() => setOpen(false)}
+                aria-label="Close menu"
+                className="grid h-8 w-8 cursor-pointer place-items-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <NavLinks path={path} onNavigate={() => setOpen(false)} />
+            {FOOTER}
+          </nav>
+        </div>
+      )}
+    </>
   );
 }

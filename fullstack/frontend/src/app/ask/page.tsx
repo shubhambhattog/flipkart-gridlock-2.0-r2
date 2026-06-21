@@ -78,6 +78,7 @@ export default function AskPage() {
   const [thinking, setThinking] = useState(false);
   const [listening, setListening] = useState(false);
   const [voiceSupported, setVoiceSupported] = useState(false);
+  const [railOpen, setRailOpen] = useState(false); // mobile conversation drawer
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const recognitionRef = useRef<any>(null);
@@ -181,6 +182,7 @@ export default function AskPage() {
   function newChat() {
     recognitionRef.current?.stop?.();
     setListening(false);
+    setRailOpen(false);
     setActiveId(null); // unsaved fresh chat — persists on first message
     setInput("");
     setThinking(false);
@@ -190,6 +192,7 @@ export default function AskPage() {
   function selectConversation(id: string) {
     recognitionRef.current?.stop?.();
     setListening(false);
+    setRailOpen(false);
     setActiveId(id);
     setInput("");
     inputRef.current?.focus();
@@ -232,8 +235,16 @@ export default function AskPage() {
 
   return (
     <div className="flex h-full">
-      {/* ---- conversation rail ---- */}
-      <aside className="flex w-60 shrink-0 flex-col border-r border-border bg-sidebar/40">
+      {railOpen && <div className="fixed inset-0 z-50 bg-black/50 md:hidden" onClick={() => setRailOpen(false)} />}
+      {/* ---- conversation rail (static on md+, slide-over drawer on mobile) ---- */}
+      <aside
+        className={cn(
+          "flex-col border-r border-border bg-sidebar md:flex md:w-60 md:shrink-0 md:bg-sidebar/40",
+          railOpen
+            ? "fixed inset-y-0 left-0 z-[60] flex w-72 max-w-[80vw] md:static md:z-auto md:w-60"
+            : "hidden",
+        )}
+      >
         <div className="p-3">
           <Button onClick={newChat} variant="outline" className="w-full justify-start gap-2">
             <Plus className="h-4 w-4" /> New chat
@@ -287,6 +298,14 @@ export default function AskPage() {
 
       {/* ---- chat column ---- */}
       <div className="flex h-full min-w-0 flex-1 flex-col">
+        <div className="flex shrink-0 items-center gap-2 border-b border-border px-4 py-2 md:hidden">
+          <Button variant="outline" size="sm" onClick={() => setRailOpen(true)} className="gap-1.5">
+            <MessageSquare className="h-4 w-4" /> Chats
+          </Button>
+          <Button variant="outline" size="sm" onClick={newChat} className="gap-1.5">
+            <Plus className="h-4 w-4" /> New
+          </Button>
+        </div>
         <header className="flex shrink-0 items-center gap-3 border-b border-border px-6 py-5">
           <div className="grid h-9 w-9 place-items-center rounded-lg bg-primary/15 text-primary">
             <Bot className="h-5 w-5" />

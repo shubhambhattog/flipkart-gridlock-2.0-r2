@@ -260,7 +260,7 @@ export default function CoveragePage() {
               Share of enforcement activity by hour of day — when officers actually write tickets.
             </p>
           </div>
-          <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-muted-foreground">
             <span className="flex items-center gap-1.5"><span className="inline-block h-2.5 w-2.5 rounded-sm bg-primary" /> Morning (&lt;1 PM)</span>
             <span className="flex items-center gap-1.5"><span className="inline-block h-2.5 w-2.5 rounded-sm bg-destructive" /> Evening peak (5–9 PM)</span>
           </div>

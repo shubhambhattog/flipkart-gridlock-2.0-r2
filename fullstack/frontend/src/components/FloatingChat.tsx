@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Bot, X, Send, ArrowUpRight, Sparkles, RotateCcw } from "lucide-react";
 import { api, type Deployment, type ChatTurn } from "@/lib/api";
@@ -28,6 +29,7 @@ const GREETING: Msg = {
 };
 
 export default function FloatingChat() {
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([GREETING]);
   const [input, setInput] = useState("");
@@ -65,6 +67,8 @@ export default function FloatingChat() {
     setThinking(false);
     inputRef.current?.focus();
   }
+
+  if (pathname === "/map") return null; // keep the full-screen map route clean for screenshots
 
   return (
     <>

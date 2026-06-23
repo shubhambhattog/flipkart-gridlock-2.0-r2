@@ -3,7 +3,6 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Nav from "@/components/Nav";
 import FloatingChat from "@/components/FloatingChat";
-import SmoothScroll from "@/components/SmoothScroll";
 
 const inter = Inter({ variable: "--font-inter", subsets: ["latin"] });
 
@@ -22,7 +21,7 @@ export default function RootLayout({
       <body className="h-full bg-background text-foreground">
         <div className="flex h-screen flex-col md:flex-row">
           <Nav />
-          <SmoothScroll>{children}</SmoothScroll>
+          <main className="flex-1 overflow-y-auto">{children}</main>
         </div>
         <FloatingChat />
       </body>

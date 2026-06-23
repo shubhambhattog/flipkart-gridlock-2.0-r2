@@ -53,19 +53,13 @@ export default function HotspotMap({
   );
 
   return (
-    // data-lenis-prevent: the map owns the wheel (deck.gl zoom/pan) — Lenis must
-    // not also scroll the page when the cursor is over it. This wrapper is a
-    // guaranteed ancestor of every wheel target inside the map (the canvas is a
-    // child, so a selector-based check on the target alone would miss it).
-    <div data-lenis-prevent style={{ position: "absolute", inset: 0 }}>
-      <DeckGL
-        initialViewState={{ longitude: 77.5946, latitude: 12.9716, zoom, pitch, bearing: 0 }}
-        controller
-        layers={layers}
-        style={{ position: "absolute", inset: "0" }}
-      >
-        <Map mapStyle={BASEMAP} />
-      </DeckGL>
-    </div>
+    <DeckGL
+      initialViewState={{ longitude: 77.5946, latitude: 12.9716, zoom, pitch, bearing: 0 }}
+      controller
+      layers={layers}
+      style={{ position: "absolute", inset: "0" }}
+    >
+      <Map mapStyle={BASEMAP} />
+    </DeckGL>
   );
 }

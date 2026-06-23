@@ -83,7 +83,7 @@ export default function OffendersPage() {
                   </p>
                 </div>
               </div>
-              <div data-lenis-prevent className="max-h-[460px] overflow-y-auto px-2 pb-2">
+              <div className="max-h-[460px] overflow-y-auto px-2 pb-2">
                 <Table>
                   <TableHeader className="sticky top-0 bg-card">
                     <TableRow>

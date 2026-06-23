@@ -171,13 +171,11 @@ class PatrolReq(BaseModel):
 def patrol(req: PatrolReq):
     dow = copilot._dow_index(req.weekday)
     h0, h1 = sorted((max(0, min(23, req.start_hour)), max(0, min(23, req.end_hour))))
-    zsub = STATE["zones"]
-    if req.area:
-        mask = STATE["zones"]["label"].str.contains(req.area, case=False, na=False)
-        if mask.any():
-            zsub = STATE["zones"][mask]
+    k = max(1, req.teams)
+    # 'around <area>' expands to the surrounding zones so a single-junction area can still seat k teams
+    zsub, _ = core.zones_near_area(STATE["zones"], req.area, k=k)
     pred = core.predict_load(STATE["fc"], dow, range(h0, h1 + 1))
-    plan = core.allocate_patrols(zsub, pred, k=max(1, req.teams))
+    plan = core.allocate_patrols(zsub, pred, k=k)
     recs = _records(plan)
     trends = STATE.get("trends", {})
     for r in recs:                                    # attach the zone's recent trend for explainability

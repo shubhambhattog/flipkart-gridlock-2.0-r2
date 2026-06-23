@@ -88,18 +88,22 @@ def _make_tools(ctx):
         if h1 < h0:
             h0, h1 = h1, h0
         teams = max(1, int(teams))
-        zsub = zones
-        if area and area.strip():
-            mask = zones["label"].str.contains(area.strip(), case=False, na=False)
-            if mask.any():
-                zsub = zones[mask]
+        # 'around KR Market' -> the neighbourhood of zones near it (not the single KR Market junction,
+        # which the 600 m spacing would let seat only one team). See core.zones_near_area.
+        zsub, scoped = core.zones_near_area(zones, area, k=teams)
         pred = core.predict_load(fc, dow, range(h0, h1 + 1))
         plan = core.allocate_patrols(zsub, pred, k=teams)
         ctx["plan"] = plan
+        if scoped:
+            scope = f"around {area}"
+        elif area and area.strip():
+            scope = f"city-wide (couldn't pinpoint '{area}')"
+        else:
+            scope = "city-wide"
         return _clean({"weekday": DOW[dow], "window": f"{h0:02d}:00-{h1:02d}:59",
-                       "teams": int(len(plan)), "scope": f"area: {area}" if area else "city-wide",
+                       "teams": int(len(plan)), "scope": scope,
                        "deployments": plan[["team", "label", "pred_load",
-                                            "impact_score"]].head(teams).to_dict("records")})
+                                            "impact_score"]].to_dict("records")})
 
     def top_hotspots(n: int = 10) -> dict:
         """List the highest Congestion-Impact-Score parking hotspots city-wide.

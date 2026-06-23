@@ -218,6 +218,35 @@ def allocate_patrols(zones: pd.DataFrame, pred: pd.DataFrame, k: int = 10,
     out["pred_load"] = out["pred_load"].round(2)
     return out
 
+def zones_near_area(zones: pd.DataFrame, area, k: int = 8, base_radius_m: float = 1500.0,
+                    max_radius_m: float = 5000.0, step_m: float = 500.0) -> tuple:
+    """Resolve a free-text `area` (e.g. 'KR Market') to the NEIGHBOURHOOD of candidate zones around it.
+
+       Seeds on zones whose label contains the text, then keeps every zone within a radius of the seed
+       centroid — growing the radius (up to max_radius_m) until there are enough candidates to seat k
+       spatially-spread teams. Returns (candidate_zones, scoped: bool); an empty/unmatched `area` returns
+       (zones, False) i.e. city-wide.
+
+       Why this exists: a place like 'KR Market' is a SINGLE junction, so a label-only filter yields one
+       (or a couple of adjacent) zones — and the 600 m patrol spacing then seats just ONE team however many
+       were asked for. Expanding to the surrounding zones lets 'plan 8 teams around KR Market' actually
+       return 8 nearby teams. Used by both the /patrol endpoint and the co-pilot's make_patrol_plan."""
+    if area is None or not str(area).strip():
+        return zones, False
+    mask = zones["label"].str.contains(str(area).strip(), case=False, na=False, regex=False)
+    if not mask.any():
+        return zones, False                              # text didn't match any zone → fall back city-wide
+    seed = zones[mask]
+    clat, clon = float(seed["lat"].mean()), float(seed["lon"].mean())
+    dist = _haversine(clat, clon, zones["lat"].to_numpy(), zones["lon"].to_numpy())
+    zd = zones.assign(_dist_m=dist)
+    target = max(8, int(k) * 2)                           # headroom: 600 m spacing rejects close-by candidates
+    radius = base_radius_m
+    while radius < max_radius_m and int((zd["_dist_m"] <= radius).sum()) < target:
+        radius += step_m
+    near = zd[zd["_dist_m"] <= radius].drop(columns="_dist_m")
+    return near, True
+
 # --------------------------------------------------------------------------
 def coverage_by_hour(df: pd.DataFrame) -> pd.DataFrame:
     """Share of enforcement by hour-of-day — exposes the evening coverage gap."""

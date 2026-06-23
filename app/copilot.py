@@ -31,7 +31,12 @@ SYSTEM = (
     "the teams or zones in prose — the app already renders the full plan visually.\n"
     "SHORTFALL: if teams_placed is less than teams_requested, add one short sentence explaining why, using "
     "the tool's note — frame it as the area only supporting that many non-overlapping patrols (the rest "
-    "would double up), NOT as an error or failure."
+    "would double up), NOT as an error or failure.\n"
+    "BLIND SPOT: if the tool returns a coverage_note (most placed teams have ~0 expected catches), LEAD with "
+    "it instead of presenting the plan flatly: say plainly this window is barely enforced here (a blind "
+    "spot), state how many teams actually have expected catches, and recommend the efficient team count — "
+    "note the rest are worth deploying only to proactively seed the blind spot. Never pass off several "
+    "zero-catch teams as if all are productive."
 )
 
 # In-app help/navigation assistant — scoped "RAG-lite" knowledge of the app + strict guardrails.
@@ -69,6 +74,10 @@ HELP_SYSTEM = (
     "the table below shows where to send each team — do not enumerate the teams in prose. If teams_placed is "
     "less than teams_requested, add one sentence (from the tool's note) explaining the area only supports that "
     "many non-overlapping patrols — frame it as coverage being complete, not as a failure.\n"
+    "- If the tool returns a coverage_note (most placed teams have ~0 expected catches), LEAD with it: this "
+    "window is a blind spot, only N teams have real expected catches, recommend that efficient count, and note "
+    "the rest are worth deploying only to proactively cover the blind spot — don't present zero-catch teams as "
+    "all productive.\n"
     "- Match the user's language (English, Hindi, Kannada)."
 )
 
@@ -106,16 +115,28 @@ def _make_tools(ctx):
         else:
             scope = "city-wide"
         placed = int(len(plan))
+        with_catches = int((plan["pred_load"] > 0.0).sum()) if placed else 0
+        total_catches = round(float(plan["pred_load"].sum()), 2) if placed else 0.0
         result = {"weekday": DOW[dow], "window": f"{h0:02d}:00-{h1:02d}:59",
-                  "teams_requested": teams, "teams_placed": placed, "scope": scope,
+                  "teams_requested": teams, "teams_placed": placed,
+                  "teams_with_expected_catches": with_catches,
+                  "expected_catches_total": total_catches, "scope": scope,
                   "deployments": plan[["team", "label", "pred_load",
                                        "impact_score"]].to_dict("records")}
         if placed < teams:
-            # be honest about why the plan is short: not enough distinct zones to space teams 600m apart
+            # not enough distinct zones to space all requested teams 600 m apart
             result["note"] = (
                 f"The most teams that fit {scope} in this window without overlapping is {placed} "
                 f"(patrols are kept 600 m apart). The remaining {teams - placed} would just double up on "
                 f"zones already covered, so they add no extra coverage here.")
+        if placed and with_catches * 2 < placed:
+            # blind-spot window: most placed teams sit on zones with ~no logged activity in this window,
+            # so they're ranked by impact, not expected catches — say so and recommend the efficient count.
+            result["coverage_note"] = (
+                f"Low-enforcement (blind-spot) window {scope}: only {with_catches} of the {placed} zones "
+                f"have any expected catches; the rest are high-impact spots with almost no logged activity "
+                f"in this window. About {max(1, with_catches)} team(s) is the efficient call for catches — "
+                f"deploy more only to proactively start covering the blind spot.")
         return _clean(result)
 
     def top_hotspots(n: int = 10) -> dict:

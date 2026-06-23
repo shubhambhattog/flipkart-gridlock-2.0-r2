@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { ExternalLink, Radar, Gauge, LineChart, Siren, RotateCcw, Bot } from "lucide-react";
 import { Card } from "@/components/ui";
-import PitchPlayer from "@/components/PitchPlayer";
 
 export const metadata: Metadata = {
   title: "Pitch Video — ParkPulse",
@@ -33,11 +32,20 @@ export default function PitchPage() {
       </header>
 
       <div className="overflow-hidden rounded-xl border border-border bg-card shadow-lg">
-        <PitchPlayer />
+        <div className="relative aspect-video w-full bg-black">
+          <iframe
+            className="absolute inset-0 h-full w-full"
+            src={`https://www.youtube-nocookie.com/embed/${VIDEO_ID}?rel=0&modestbranding=1`}
+            title="ParkPulse pitch video"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerPolicy="strict-origin-when-cross-origin"
+            allowFullScreen
+          />
+        </div>
       </div>
 
       <div className="mt-3 flex items-center justify-between gap-3">
-        <p className="text-xs text-muted-foreground">Plays at 1.25× by default. Trouble with the embed? Open it directly on YouTube.</p>
+        <p className="text-xs text-muted-foreground">Trouble with the embed? Open it directly on YouTube.</p>
         <a
           href={`https://www.youtube.com/watch?v=${VIDEO_ID}`}
           target="_blank"

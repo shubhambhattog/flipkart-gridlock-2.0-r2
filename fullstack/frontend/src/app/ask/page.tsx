@@ -250,7 +250,7 @@ export default function AskPage() {
             <Plus className="h-4 w-4" /> New chat
           </Button>
         </div>
-        <div className="flex-1 overflow-y-auto px-2 pb-3">
+        <div data-lenis-prevent className="flex-1 overflow-y-auto px-2 pb-3">
           {!loaded ? null : conversations.length === 0 ? (
             <p className="px-3 py-6 text-center text-xs text-muted-foreground">
               No saved chats yet. Your conversations will appear here.
@@ -318,7 +318,7 @@ export default function AskPage() {
           </div>
         </header>
 
-        <div ref={scrollRef} className="flex-1 overflow-y-auto px-6 py-6">
+        <div ref={scrollRef} data-lenis-prevent className="flex-1 overflow-y-auto px-6 py-6">
           <div className="mx-auto flex max-w-3xl flex-col gap-5">
             {messages.map((m, i) =>
               m.role === "user" ? (

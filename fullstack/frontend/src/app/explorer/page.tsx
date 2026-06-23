@@ -187,7 +187,7 @@ export default function ExplorerPage() {
                   {zones.length === 0 ? (
                     <p className="mt-6 text-sm text-muted-foreground">No matching zones yet — relax a filter to surface hotspots.</p>
                   ) : (
-                    <ul className="mt-4 space-y-2.5 overflow-y-auto pr-1" style={{ maxHeight: 372 }}>
+                    <ul data-lenis-prevent className="mt-4 space-y-2.5 overflow-y-auto pr-1" style={{ maxHeight: 372 }}>
                       {topZones.map((z, i) => (
                         <li key={z.gh6} className="flex items-center gap-3">
                           <span className="w-5 text-right text-sm text-muted-foreground">{i + 1}</span>

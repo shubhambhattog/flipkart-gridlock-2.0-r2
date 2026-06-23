@@ -198,8 +198,14 @@ def allocate_patrols(zones: pd.DataFrame, pred: pd.DataFrame, k: int = 10,
        them at least `min_sep_m` apart (avoid stacking teams on one street)."""
     cols = ["gh6", "lat", "lon", "label", "impact_score", "avg_severity",
             "junction_frac", "main_road_frac", "top_violation"]
-    cand = (pred.merge(zones[cols], on="gh6")
-            .sort_values("pred_load", ascending=False).reset_index(drop=True))
+    # LEFT-join so every in-scope zone stays a candidate even with no predicted load for this window
+    # (e.g. the evening blind spot, where almost no zone has logged 5-9pm enforcement). Rank by predicted
+    # load, then impact score as the fallback — so we can still field k spaced teams at the most important
+    # nearby zones instead of collapsing to the one or two zones that happen to have data.
+    cand = zones[cols].merge(pred, on="gh6", how="left")
+    cand["pred_load"] = cand["pred_load"].fillna(0.0)
+    cand = (cand.sort_values(["pred_load", "impact_score"], ascending=[False, False])
+            .reset_index(drop=True))
     chosen = []
     for _, row in cand.iterrows():
         if len(chosen) >= k:

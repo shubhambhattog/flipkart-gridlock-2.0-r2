@@ -2,10 +2,12 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, MapPinned, Siren, Target, RotateCcw, Bot, CalendarClock, PlayCircle, Menu, X } from "lucide-react";
+import { LayoutDashboard, MapPinned, Siren, Target, RotateCcw, Bot, CalendarClock, PlayCircle, Menu, X, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const LINKS = [
+type NavLink = { href: string; label: string; icon: LucideIcon; badge?: string };
+
+const LINKS: NavLink[] = [
   { href: "/", label: "Command Center", icon: LayoutDashboard },
   { href: "/explorer", label: "Hotspot Explorer", icon: MapPinned },
   { href: "/forecast", label: "Forecast & Patrol", icon: Siren },
@@ -13,7 +15,7 @@ const LINKS = [
   { href: "/coverage", label: "Coverage & ROI", icon: Target },
   { href: "/offenders", label: "Repeat Offenders", icon: RotateCcw },
   { href: "/ask", label: "Ask ParkPulse", icon: Bot },
-  { href: "/pitch", label: "Pitch Video", icon: PlayCircle },
+  { href: "/pitch", label: "Pitch Video", icon: PlayCircle, badge: "New" },
 ];
 
 function Brand() {
@@ -50,6 +52,14 @@ function NavLinks({ path, onNavigate }: { path: string; onNavigate?: () => void 
           >
             <Icon className={cn("h-4 w-4", active && "text-primary")} />
             <span>{l.label}</span>
+            {l.badge && (
+              <span className="relative ml-auto inline-flex">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary/50" />
+                <span className="relative rounded-full bg-primary px-1.5 py-0.5 text-[9px] font-bold uppercase leading-none tracking-wide text-primary-foreground">
+                  {l.badge}
+                </span>
+              </span>
+            )}
           </Link>
         );
       })}

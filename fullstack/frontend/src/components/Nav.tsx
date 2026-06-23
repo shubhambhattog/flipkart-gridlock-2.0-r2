@@ -2,7 +2,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, MapPinned, Siren, Target, RotateCcw, Bot, CalendarClock, Menu, X } from "lucide-react";
+import { LayoutDashboard, MapPinned, Siren, Target, RotateCcw, Bot, CalendarClock, PlayCircle, Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const LINKS = [
@@ -13,6 +13,7 @@ const LINKS = [
   { href: "/coverage", label: "Coverage & ROI", icon: Target },
   { href: "/offenders", label: "Repeat Offenders", icon: RotateCcw },
   { href: "/ask", label: "Ask ParkPulse", icon: Bot },
+  { href: "/pitch", label: "Pitch Video", icon: PlayCircle },
 ];
 
 function Brand() {

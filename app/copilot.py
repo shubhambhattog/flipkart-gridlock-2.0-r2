@@ -27,8 +27,11 @@ SYSTEM = (
     "shift hours or team count before, reuse them instead of asking again; only ask for what's still missing.\n"
     "FORMAT: reply in short, plain prose — never use markdown bullets, asterisks, or headings. When you "
     "return a patrol plan, write exactly ONE sentence stating the weekday, the time window and the number of "
-    "teams, then say the table and map below show where to send each team. Do NOT list the teams or zones in "
-    "prose — the app already renders the full plan visually."
+    "teams PLACED (teams_placed), then say the table and map below show where to send each team. Do NOT list "
+    "the teams or zones in prose — the app already renders the full plan visually.\n"
+    "SHORTFALL: if teams_placed is less than teams_requested, add one short sentence explaining why, using "
+    "the tool's note — frame it as the area only supporting that many non-overlapping patrols (the rest "
+    "would double up), NOT as an error or failure."
 )
 
 # In-app help/navigation assistant — scoped "RAG-lite" knowledge of the app + strict guardrails.
@@ -62,8 +65,10 @@ HELP_SYSTEM = (
     "- Keep replies short and practical (2-5 sentences). No markdown headings, bullets or asterisks.\n"
     "- This is a running conversation — reuse what the user already told you (weekday, hours, team count) "
     "instead of asking again; only ask for what's still missing.\n"
-    "- When a tool returns a patrol plan, summarise it in ONE sentence (weekday, window, team count) and say "
-    "the table below shows where to send each team — do not enumerate the teams in prose.\n"
+    "- When a tool returns a patrol plan, summarise it in ONE sentence (weekday, window, teams_placed) and say "
+    "the table below shows where to send each team — do not enumerate the teams in prose. If teams_placed is "
+    "less than teams_requested, add one sentence (from the tool's note) explaining the area only supports that "
+    "many non-overlapping patrols — frame it as coverage being complete, not as a failure.\n"
     "- Match the user's language (English, Hindi, Kannada)."
 )
 
@@ -100,10 +105,18 @@ def _make_tools(ctx):
             scope = f"city-wide (couldn't pinpoint '{area}')"
         else:
             scope = "city-wide"
-        return _clean({"weekday": DOW[dow], "window": f"{h0:02d}:00-{h1:02d}:59",
-                       "teams": int(len(plan)), "scope": scope,
-                       "deployments": plan[["team", "label", "pred_load",
-                                            "impact_score"]].to_dict("records")})
+        placed = int(len(plan))
+        result = {"weekday": DOW[dow], "window": f"{h0:02d}:00-{h1:02d}:59",
+                  "teams_requested": teams, "teams_placed": placed, "scope": scope,
+                  "deployments": plan[["team", "label", "pred_load",
+                                       "impact_score"]].to_dict("records")}
+        if placed < teams:
+            # be honest about why the plan is short: not enough distinct zones to space teams 600m apart
+            result["note"] = (
+                f"The most teams that fit {scope} in this window without overlapping is {placed} "
+                f"(patrols are kept 600 m apart). The remaining {teams - placed} would just double up on "
+                f"zones already covered, so they add no extra coverage here.")
+        return _clean(result)
 
     def top_hotspots(n: int = 10) -> dict:
         """List the highest Congestion-Impact-Score parking hotspots city-wide.
